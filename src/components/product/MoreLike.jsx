@@ -1,0 +1,161 @@
+import { useRef } from "react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+
+function MoreLike() {
+    const sliderRef = useRef(null);
+    
+      const products = [
+        {
+          id: 1,
+          name: "Black Tamannaah Kurta Set",
+          price: "₹16,000",
+          image: "/product/product_morelike1.jpg",
+        },
+        {
+          id: 2,
+          name: "Black & Rust Mehroz Co-ord Set",
+          price: "₹21,900",
+          image: "/product/product_morelike2.jpg",
+        },
+        {
+          id: 3,
+          name: "Mustard Kiaraa Co-ord Set",
+          price: "₹16,000",
+          image: "/product/product_morelike3.jpg",
+        },
+        {
+          id: 4,
+          name: "Mustard Agaaz Co-ord Set",
+          price: "₹19,500",
+          image: "/product/product_morelike4.jpg",
+        },
+        {
+          id: 5,
+          name: "Black Kiran Co-ord Set",
+          price: "₹11,500",
+          image: "/product/product_morelike5.jpg",
+        },
+        {
+          id: 6,
+          name: "Emerald Silk Suit",
+          price: "₹24,000",
+          image: "/product/product_morelike6.jpg",
+        },
+               {
+          id: 6,
+          name: "Emerald Silk Suit",
+          price: "₹24,000",
+          image: "/product/product_morelike7.jpg",
+        },
+               {
+          id: 6,
+          name: "Emerald Silk Suit",
+          price: "₹24,000",
+          image: "/product/product_morelike8.jpg",
+        },
+               {
+          id: 6,
+          name: "Emerald Silk Suit",
+          price: "₹24,000",
+          image: "/product/product_morelike9.jpgg",
+        },
+      ];
+    
+      const scrollLeft = () => {
+        sliderRef.current?.scrollBy({
+          left: -400,
+          behavior: "smooth",
+        });
+      };
+    
+      const scrollRight = () => {
+        sliderRef.current?.scrollBy({
+          left: 400,
+          behavior: "smooth",
+        });
+      };
+  return (
+    <section className="bg-[#f8f7f4] py-12 md:py-16">
+          <div className="max-w-[1600px] mx-auto px-4 lg:px-8">
+    
+            {/* Heading */}
+            <div className="text-center mb-10">
+              <h2 className="uppercase tracking-[4px] text-[#666] text-sm md:text-base">
+                MORE LIKE THIS
+              </h2>
+            </div>
+    
+            <div className="relative">
+    
+              {/* Left Arrow */}
+              <button
+                onClick={scrollLeft}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-sm w-10 h-10 flex items-center justify-center border border-[#e5e5e5] hover:bg-gray-50"
+              >
+                <FiChevronLeft size={22} />
+              </button>
+    
+              {/* Products Slider */}
+              <div
+                ref={sliderRef}
+                className="
+                  flex
+                  gap-4
+                  overflow-x-auto
+                  scroll-smooth
+                  scrollbar-hide
+                  px-10
+                "
+              >
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    className="
+                      flex-shrink-0
+                      w-[180px]
+                      sm:w-[220px]
+                      md:w-[240px]
+                    "
+                  >
+                    <div className="overflow-hidden bg-white">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="
+                          w-full
+                          h-[280px]
+                          sm:h-[340px]
+                          md:h-[420px]
+                          object-cover
+                        "
+                      />
+                    </div>
+    
+                    <div className="text-center mt-3">
+                      <h3 className="text-[12px] md:text-[13px] text-[#333] leading-5">
+                        {product.name}
+                      </h3>
+    
+                      <p className="mt-1 text-[12px] text-[#555]">
+                        {product.price}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+    
+              {/* Right Arrow */}
+              <button
+                onClick={scrollRight}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-sm w-10 h-10 flex items-center justify-center border border-[#e5e5e5] hover:bg-gray-50"
+              >
+                <FiChevronRight size={22} />
+              </button>
+    
+            </div>
+          </div>
+        </section>
+  )
+}
+
+export default MoreLike

@@ -1,0 +1,19 @@
+@import "tailwindcss";
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.active {
+  color: #FFA100;
+
+}
+
+.landing-height {
+  min-height: calc(100vh - 70px);
+}
