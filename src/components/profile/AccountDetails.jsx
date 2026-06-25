@@ -1,10 +1,75 @@
 
-
+import { useState, useEffect } from "react";
+import api from "../../api/api";
 
 function AccountDetails() {
+  const [userData, setUserData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    mobile: "",
+  });
+
+  const fetchUserDetails = async () => {
+  try {
+    const token = localStorage.getItem("access");
+    console.log("Fetching user details...");
+
+    const response = await api.get(
+      "api/user/user_details/",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    setUserData(response.data);
+  } catch (error) {
+    console.log(error);
+  }
+  
+};
+
+useEffect(() => {
+  fetchUserDetails();
+}, []);
+
+ 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const token = localStorage.getItem("access");
+
+    const response = await api.put(
+      "api/user/update-profile/",
+      userData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response.data);
+    setUserData(response.data);
+
+    alert(response.data.message);
+  } catch (error) {
+    console.log(error);
+    alert("Failed to update profile");
+  }
+};
+
+  const handleChange = (e) => {
+  setUserData({
+    ...userData,
+    [e.target.name]: e.target.value,
+  });
+};
   return (
     <div className="bg-white border border-[#e5e5e5] p-6 md:p-8">
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Name */}
         <div className="grid md:grid-cols-2 gap-5">
           <div>
@@ -14,7 +79,9 @@ function AccountDetails() {
 
             <input
               type="text"
-              placeholder="Enter your name"
+              name="first_name"
+              value={userData.first_name}
+              onChange={handleChange}
               className="w-full border border-[#e5e5e5] px-4 py-3 outline-none"
             />
           </div>
@@ -26,7 +93,9 @@ function AccountDetails() {
 
             <input
               type="text"
-              defaultValue=""
+              name="last_name"
+              value={userData.last_name}
+              onChange={handleChange}
               className="w-full border border-[#e5e5e5] px-4 py-3 outline-none"
             />
           </div>
@@ -40,7 +109,9 @@ function AccountDetails() {
 
           <input
             type="email"
-            defaultValue=""
+            name="email"
+            value={userData.email}
+            onChange={handleChange}
             className="w-full border border-[#e5e5e5] px-4 py-3 outline-none"
           />
         </div>
@@ -58,14 +129,16 @@ function AccountDetails() {
 
             <input
               type="text"
-              defaultValue=""
+              name="mobile"
+              value={userData.mobile}
+              onChange={handleChange}
               className="flex-1 px-4 py-3 outline-none"
             />
           </div>
         </div>
 
         {/* DOB + Gender */}
-        <div className="grid md:grid-cols-2 gap-5">
+        {/* <div className="grid md:grid-cols-2 gap-5">
           <div>
             <label className="block text-[11px] uppercase tracking-[2px] mb-2">
               Date Of Birth
@@ -88,7 +161,7 @@ function AccountDetails() {
               <option>Other</option>
             </select>
           </div>
-        </div>
+        </div> */}
 
         {/* Newsletter */}
         <div>

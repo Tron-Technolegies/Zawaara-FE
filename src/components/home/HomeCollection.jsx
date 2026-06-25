@@ -1,4 +1,4 @@
-
+import {Link} from "react-router-dom"
 const categories = [
   {
     name: "CASUAL",
@@ -27,7 +27,7 @@ const categories = [
 ];
 const HomeCollection = () => {
   return (
-    <section className="mt-[-90px]" >
+    <section>
       {/* Category Section */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
         <h2 className="text-center text-[#2f2a26] text-2xl md:text-4xl font-serif tracking-[2px] mb-12">
@@ -73,12 +73,13 @@ const HomeCollection = () => {
               <br />
               COLLECTION
             </div>
-
-            <button className="bg-white text-[#2f2a26] px-8 py-3 uppercase tracking-[3px] text-xs font-[500] hover:bg-[#f4f4f4] transition">
+            <Link to="/new-arrivals">
+            <button className="bg-white cursor-pointer  text-[#2f2a26] px-8 py-3 uppercase tracking-[3px] text-xs font-[500] hover:bg-[#f4f4f4] hover:scale-105">
               Discover
             </button>
+            </Link>
           </div>
-        </div>
+        </div>  
       </div>
     </section>
   )

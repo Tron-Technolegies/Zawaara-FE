@@ -1,8 +1,13 @@
+import { Link } from "react-router-dom";
 
-
-function ShopyByCategoriesCard({ image, title, buttonText = "DISCOVER" }) {
+function ShopyByCategoriesCard({
+  id,
+  image,
+  title,
+  buttonText = "DISCOVER",
+}) {
   return (
-<div className="relative h-full overflow-hidden group cursor-pointer">
+    <div className="relative h-full overflow-hidden group cursor-pointer">
       <img
         src={image}
         alt={title}
@@ -16,12 +21,14 @@ function ShopyByCategoriesCard({ image, title, buttonText = "DISCOVER" }) {
           {title}
         </h3>
 
-        <button className="border border-white text-white text-xs tracking-[3px] uppercase px-6 py-2 hover:bg-white hover:text-black transition">
-          {buttonText}
-        </button>
+        <Link to={`/category/${id}`}>
+          <button className="border border-white text-white text-xs tracking-[3px] uppercase px-6 py-2 hover:bg-white hover:text-black transition">
+            {buttonText}
+          </button>
+        </Link>
       </div>
     </div>
   );
-};
+}
 
-export default ShopyByCategoriesCard
+export default ShopyByCategoriesCard;

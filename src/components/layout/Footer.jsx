@@ -1,4 +1,4 @@
-
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -31,21 +31,21 @@ const Footer = () => {
               </li>
 
               <li>
-                <a href="#" className="hover:text-white transition">
+                <Link to="/shippingandreturns" className="hover:text-white transition">
                   Shipping & Returns
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a href="#" className="hover:text-white transition">
+                <Link to="/sizeguide" className="hover:text-white transition">
                   Size Guide
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a href="#" className="hover:text-white transition">
+                <Link to="/faq" className="hover:text-white transition">
                   FAQ
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -58,33 +58,33 @@ const Footer = () => {
 
             <ul className="space-y-5">
               <li>
-                <a href="#" className="hover:text-white transition">
+                <Link to="/" className="hover:text-white transition">
                   Home
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a href="#" className="hover:text-white transition">
+                <Link to="/new-arrivals" className="hover:text-white transition">
                   New In
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a href="#" className="hover:text-white transition">
+                <Link to="/bridal" className="hover:text-white transition">
                   Bridal
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a href="#" className="hover:text-white transition">
+                <Link to="/cart" className="hover:text-white transition">
                   Cart
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a href="#" className="hover:text-white transition">
+                <Link to="/wishlist" className="hover:text-white transition">
                   Wishlist
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -127,13 +127,12 @@ const Footer = () => {
             </p>
 
             <div className="flex gap-8 text-sm text-[#948a84]">
-              <a href="#" className="hover:text-white transition">
-                Privacy Policy
-              </a>
-
-              <a href="#" className="hover:text-white transition">
+              <Link to="/privacypolicy" className="hover:text-white transition">
+                Privacypolicy
+              </Link>
+              <Link to="/termsofservice" className="hover:text-white transition">
                 Terms of Service
-              </a>
+              </Link>
             </div>
           </div>
         </div>

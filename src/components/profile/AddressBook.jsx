@@ -97,13 +97,14 @@ function AddressBook() {
             Add another address for faster checkout.
           </p>
         </button>
-        {showModal && (
-        <AddAddressModal
-          onClose={() => setShowModal(false)}
-        />
-      )}
+      
+       
 
       </div>
+       <AddAddressModal
+          open={showModal}
+          onClose={() => setShowModal(false)}
+        />
     </div>
   )
 }

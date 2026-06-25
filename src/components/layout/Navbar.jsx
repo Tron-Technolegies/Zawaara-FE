@@ -5,8 +5,20 @@ import { NavLink, Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
-    const location = useLocation();
+    const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+
+    const location = useLocation();
+    const token = localStorage.getItem("access");
+    console.log(token);
+
+    const handleLogout = () => {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        window.location.href = "/login";
+      };
+
+    
    useEffect(() => {
   const handleScroll = () => {
     setScrolled(window.scrollY > window.innerHeight - 70);
@@ -19,8 +31,10 @@ const Navbar = () => {
   };
 }, []);
 
+
+
     const isHeroPage =
-  location.pathname === "/home" ||
+  location.pathname === "/" ||
   location.pathname === "/bridal";
 
     const textColor =
@@ -34,6 +48,9 @@ const Navbar = () => {
     ? "text-white"
     : "text-black";
 
+
+
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
   isHeroPage && !scrolled
@@ -43,24 +60,24 @@ const Navbar = () => {
       <div className="max-w-[1800px] mx-auto px-6 lg:px-10 h-[70px]  flex items-center justify-between relative">
         
         {/* Left Menu */}
-        <nav className={` hidden md:flex items-center gap-10 font-regular  `}>
+        <nav className={` hidden lg:flex items-center gap-10 font-regular  `}>
           <NavLink
             to="/new-arrivals"
             className={
               `text-[15px] uppercase tracking-[2px] hover:text-neutral-600 ${textColor} `
             }
           >
-            New In
+            Collections
           </NavLink>
 
-          <NavLink
+          {/* <NavLink
             to="/clothing"
             className={
               `text-[15px] uppercase tracking-[2px]  hover:text-neutral-600 ${textColor} `
             }
           >
             Clothing
-          </NavLink>
+          </NavLink> */}
 
           <NavLink
             to="/bridal"
@@ -72,7 +89,7 @@ const Navbar = () => {
           </NavLink>
 
           <NavLink
-            to="/home"
+            to="/"
             end
             className={
               `text-[15px] uppercase tracking-[2px]  hover:text-neutral-600 ${textColor}`
@@ -83,7 +100,7 @@ const Navbar = () => {
         </nav>
 
 
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className={textColor}
@@ -102,12 +119,12 @@ const Navbar = () => {
           <img
             src="/logo/Zawara-logo.png"
             alt="ZAWARA"
-            className="h-4 md:h-8 lg:h-8 w-auto"
+            className="h-4 lg:h-8 w-auto"
             />
         </div>
 
         {/* Right Section */}
-        <div className="ml-auto hidden md:flex items-center gap-3 lg:gap-6">
+        <div className="ml-auto hidden lg:flex items-center gap-3 lg:gap-6">
           {/* Search */}
           <div className="hidden xl:flex items-center border-b border-neutral-600 pb-1 min-w-[240px]">
             <FiSearch className={`${textColor} text-[20px]`} />
@@ -123,11 +140,43 @@ const Navbar = () => {
           </div>
 
           {/* User */}
-          <Link to="/myaccount">
-            <button className="te hover:text-neutral-600 text-black cursor-pointer">
-              <FiUser className={`text-[24px] ${textColor}`}  />
-            </button>
-          </Link>
+          <div className="relative">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="hover:text-neutral-600 text-black cursor-pointer"
+              >
+                <FiUser className={`text-[24px] ${textColor}`} />
+              </button>
+
+              {isOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+                {!token ? (
+                  <Link
+                    to="/login"
+                    className="block px-4 py-3 text-sm hover:bg-gray-100"
+                  >
+                    Login
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/myaccount"
+                      className="block px-4 py-3 text-sm hover:bg-gray-100"
+                    >
+                      My Account
+                    </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-3 text-sm hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
+        )}
+        </div>
 
           {/* Wishlist */}
           <Link to="/wishlist" >
@@ -148,8 +197,8 @@ const Navbar = () => {
       {/* Mobile Menu */}
 {menuOpen && (
   <div
-    className={`md:hidden absolute top-[70px] left-0 w-full ${
-      location.pathname === "/home" ||
+    className={`lg:hidden absolute top-[70px] left-0 w-full ${
+      location.pathname === "/" ||
       location.pathname === "/bridal"
         ? "bg-black/90"
         : "bg-[#f5f4f2]"
@@ -172,7 +221,7 @@ const Navbar = () => {
     <div className="flex items-center justify-center gap-8 py-6">
 
       <Link
-        to="/myaccount"
+        to="/login"
         onClick={() => setMenuOpen(false)}
       >
         <FiUser className={`text-2xl ${mobileTextColor}`} />
@@ -197,7 +246,7 @@ const Navbar = () => {
     {/* Navigation Links */}
     <nav className="flex flex-col pb-6">
       <NavLink
-        to="/home"
+        to="/"
         onClick={() => setMenuOpen(false)}
         className={`px-6 py-4 uppercase tracking-[2px] text-sm ${mobileTextColor}`}
       >
@@ -212,13 +261,13 @@ const Navbar = () => {
         New In
       </NavLink>
 
-      <NavLink
+      {/* <NavLink
         to="/clothing"
         onClick={() => setMenuOpen(false)}
         className={`px-6 py-4 uppercase tracking-[2px] text-sm ${mobileTextColor}`}
       >
         Clothing
-      </NavLink>
+      </NavLink> */}
 
       <NavLink
         to="/bridal"

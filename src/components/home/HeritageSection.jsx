@@ -23,11 +23,11 @@ function HeritageSection() {
               contemporary silhouettes, designed for the woman who values both
               tradition and innovation.
             </p>
-
+{/* 
             <button className="uppercase tracking-[3px] text-sm text-[#1d1d1d] border-b border-[#1d1d1d] pb-1 hover:opacity-70 transition">
               Read The Journal
-            </button>
-          </div>
+            </button> */}
+          </div>  
 
           {/* Right Image */}
           <div>

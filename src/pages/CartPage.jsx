@@ -1,32 +1,59 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { FiX, FiShare2 } from "react-icons/fi";
+import api from "../api/api";
 
 function CartPage() {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Red Beige Nazia Kurti",
-      brand: "Ritu Kumar",
-      image: "/products/product-1.jpg",
-      size: "S",
-      quantity: 1,
-      price: 12500,
-    },
-    {
-      id: 2,
-      name: "Emerald Silk Suit",
-      brand: "Ritu Kumar",
-      image: "/products/product-2.jpg",
-      size: "M",
-      quantity: 1,
-      price: 18500,
-    },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  useEffect(() => {
+  fetchCart();
+}, []);
+
+  const fetchCart = async () => {
+    try {
+      const response = await api.get(
+        "api/user/view_cart/"
+      );
+
+      setCartItems(response.data.items);
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+  return (
+    <div className="min-h-screen flex justify-center items-center">
+      Loading...
+    </div>
+  );
+}
+
+const removeItem = async (itemId) => {
+  try {
+    await api.delete(
+      `api/user/remove_cart_item/${itemId}/`
+    );
+
+    setCartItems(
+      cartItems.filter(
+        (item) => item.id !== itemId
+      )
+    );
+
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <section className="bg-[#f8f7f4] py-8 md:py-12">
@@ -76,7 +103,7 @@ function CartPage() {
                           </p>
                         </div>
 
-                        <button>
+                        <button onClick={() => removeItem(item.id)}>
                           <FiX />
                         </button>
                       </div>

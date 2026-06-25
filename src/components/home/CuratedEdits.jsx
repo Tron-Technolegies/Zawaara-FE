@@ -1,3 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
+
+
 const collections = [
     {
       id: 1,
@@ -14,6 +18,8 @@ const collections = [
   ];
 
 const CuratedEdits = () => {
+  const navigate = useNavigate
+  
   return (
     <section className="py-16 md:py-20 lg:py-24">
       <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -49,10 +55,14 @@ const CuratedEdits = () => {
                 <h3 className="text-white font-serif text-3xl md:text-4xl tracking-[2px] uppercase mb-4">
                   {item.title}
                 </h3>
-
-                <button className="border border-white text-white px-6 py-2 text-[10px] md:text-xs uppercase tracking-[2px] hover:bg-white hover:text-black transition duration-300">
+              
+              
+                <button 
+                onClick={() => navigate(`/product/${collections.id}`)}
+                className="border border-white text-white px-6 py-2 text-[10px] md:text-xs uppercase tracking-[2px] hover:bg-white hover:text-black transition duration-300">
                   Shop Collection
                 </button>
+           
               </div>
             </div>
           ))}
