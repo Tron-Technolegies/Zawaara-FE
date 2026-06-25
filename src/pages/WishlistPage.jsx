@@ -1,57 +1,90 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
+import { toast } from "react-toastify";
+import api from "../api/api";
 
 function WishlistPage() {
-    const products = [
-        {
-          id: 1,
-          category: "Dresses",
-          name: "Oasis Printed Maxi",
-          price: "₹ 18,000",
-          image: "/wishlist/wishlist_image1.jpg",
-        },
-        {
-          id: 2,
-          category: "Tunics",
-          name: "Rose Zari Tunic",
-          price: "₹ 14,400",
-          image: "/wishlist/wishlist_image2.jpg",
-        },
-        {
-          id: 3,
-          category: "Suits",
-          name: "Emerald Velvet Suit",
-          price: "₹ 24,000",
-          image: "/wishlist/wishlist_image3.jpg",
-        },
-        {
-          id: 4,
-          category: "Sarees",
-          name: "Ivory Chanderi Saree",
-          price: "₹ 32,500",
-          image: "/wishlist/wishlist_image4.jpg",
-        },
-        {
-          id: 5,
-          category: "Lehengas",
-          name: "Crimson Bridal Lehenga",
-          price: "₹ 85,000",
-          image: "/wishlist/wishlist_image5.jpg",
-        },
-        {
-          id: 6,
-          category: "Dresses",
-          name: "Oasis Printed Maxi",
-          price: "₹ 18,000",
-          image: "/wishlist/wishlist_image6.jpg",
-        },
-      ];
+
+      const [wishlist, setWishlist] = useState([]);
+      const [loading, setLoading] = useState(true);
     
-      const [wishlist, setWishlist] = useState(products);
-    
-      const removeItem = (id) => {
-        setWishlist(wishlist.filter((item) => item.id !== id));
+
+
+      useEffect(() => {
+          fetchWishlist();
+      }, []);
+
+      const fetchWishlist = async () => {
+
+          try{
+
+              const response = await api.get(
+                  "api/user/view_wishlist/"
+              );
+
+              setWishlist(response.data.items);
+
+          }
+          catch(error){
+              console.log(error);
+          }
+          finally{
+              setLoading(false);
+          }
       };
+      if(loading){
+          return(
+              <div className="min-h-screen flex justify-center items-center">
+                  Loading...
+              </div>
+          );
+      }
+
+
+      const removeItem = async (id) => {
+
+            try{
+
+                await api.delete(
+                    `api/user/remove_wishlist_item/${id}/`
+                );
+
+                setWishlist((prev)=>
+                    prev.filter(item=>item.id!==id)
+                );
+
+                toast.success("Removed from wishlist");
+
+            }
+            catch(error){
+                console.log(error);
+            }
+
+        };
+        const moveToBag = async (product) => {
+
+          try {
+            await api.post("api/user/add_to_cart/", {
+              product_id: product.product_id,
+              quantity: 1,
+            });
+
+            await api.delete(
+              `api/user/remove_wishlist_item/${product.id}/`
+            );
+
+            fetchWishlist();
+
+            toast.success("Moved to Bag");
+          } catch (error) {
+            console.log(error);
+            toast.error("Unable to move item");
+          }
+        };
+
+
+
+      
   return (
     <section className="bg-[#f8f7f4] py-10 md:py-14 min-h-screen">
       <div className="max-w-[1400px] mx-auto px-4">
@@ -70,86 +103,73 @@ function WishlistPage() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-          {wishlist.map((product) => (
-            <div key={product.id} className="group">
+        {/* Products Grid */}
+{wishlist.length === 0 ? (
+    <div className="text-center py-20">
+      <h2 className="text-2xl font-serif">
+        Your Wishlist is Empty
+      </h2>
 
-              {/* Image */}
-              <div className="relative overflow-hidden bg-white">
+      <p className="text-gray-500 mt-2">
+        Save your favourite products here.
+      </p>
+    </div>
+) : (
+  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+    {wishlist.map((product) => (
+      <div key={product.id} className="group">
 
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full aspect-[3/4] object-cover"
-                />
+        {/* Image */}
+        <div className="relative overflow-hidden bg-white">
 
-                {/* Remove Button */}
-                <button
-                  onClick={() => removeItem(product.id)}
-                  className="
-                    absolute top-3 right-3
-                    w-7 h-7
-                    rounded-full
-                    bg-white
-                    shadow
-                    flex items-center justify-center
-                    opacity-0
-                    group-hover:opacity-100
-                    transition
-                  "
-                >
-                  <FiX className="text-[#555]" />
-                </button>
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full aspect-[3/4] object-cover"
+          />
 
-                {/* Move To Bag */}
-                <div
-                  className="
-                    absolute bottom-0 left-0 right-0
-                    opacity-0
-                    group-hover:opacity-100
-                    transition duration-300
-                  "
-                >
-                  <button
-                    className="
-                      w-full
-                      bg-white
-                      text-[#222]
-                      uppercase
-                      tracking-[2px]
-                      text-[10px]
-                      py-3
-                      border-t
-                    "
-                  >
-                    Move To Bag
-                  </button>
-                </div>
+          {/* Remove Button */}
+          <button
+            onClick={() => removeItem(product.id)}
+            className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white shadow flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+          >
+            <FiX className="text-[#555]" />
+          </button>
 
-              </div>
+          {/* Move To Bag */}
+          <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition duration-300">
+            <button
+              onClick={() => moveToBag(product)}
+              className="w-full bg-white text-[#222] uppercase tracking-[2px] text-[10px] py-3 border-t"
+            >
+              Move To Bag
+            </button>
+          </div>
 
-              {/* Product Info */}
-              <div className="mt-3">
-
-                <p className="uppercase text-[10px] tracking-[1.5px] text-[#9a9a9a]">
-                  {product.category}
-                </p>
-
-                <div className="flex justify-between gap-3 mt-1">
-                  <h3 className="font-serif text-sm md:text-base text-[#222]">
-                    {product.name}
-                  </h3>
-
-                  <span className="text-sm whitespace-nowrap text-[#222]">
-                    {product.price}
-                  </span>
-                </div>
-
-              </div>
-
-            </div>
-          ))}
         </div>
+
+        {/* Product Info */}
+        <div className="mt-3">
+          <p className="uppercase text-[10px] tracking-[1.5px] text-[#9a9a9a]">
+            {product.category}
+          </p>
+
+          <div className="flex justify-between gap-3 mt-1">
+            <h3 className="font-serif text-sm md:text-base text-[#222]">
+              {product.name}
+            </h3>
+
+            <span className="text-sm whitespace-nowrap text-[#222]">
+              ₹{Number(product.price).toLocaleString()}
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+    ))}
+  </div>
+)}
 
       </div>
     </section>

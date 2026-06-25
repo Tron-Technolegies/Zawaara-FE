@@ -17,6 +17,8 @@ import ShippingAndReturns from "./pages/ShippingAndReturns";
 import FAQ from "./pages/FAQ";
 import SizeGuide from "./pages/SizeGuide";
 import ResetPassword from "./components/login/ResetPassword";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 const router = createBrowserRouter([
@@ -108,7 +110,23 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
+    </>
+  );
+  
 }
 
 export default App;

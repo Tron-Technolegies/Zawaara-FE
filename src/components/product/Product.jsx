@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../api/api";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
+
   import {
     FiHeart,
     FiShare2,
@@ -13,9 +17,10 @@ import api from "../../api/api";
 
   
   function Product() {
-      const [product, setProduct] = useState(null);
-      const [images, setImages] = useState([]);
-      const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const [product, setProduct] = useState(null);
+    const [images, setImages] = useState([]);
+    const [loading, setLoading] = useState(true);
 
 
     const {id} = useParams();
@@ -29,21 +34,55 @@ import api from "../../api/api";
         ) || [];
 
     const handleAddToCart = async () => {
-        try {
-          await api.post(
-            "api/user/add_to_cart/",
-            {
-              product_id: product.id,
-              size: selectedSize,
-              quantity: 1,
-            }
-          );
+      try {
+        await api.post("api/user/add_to_cart/", {
+          product_id: product.id,
+          size: selectedSize,
+          quantity: 1,
+        });
 
-          alert("Added to cart");
-        } catch (error) {
-          console.log(error);
+        toast.success("Product added to cart");
+
+      } catch (error) {
+
+        if (error.response?.status === 401) {
+          toast.error("Please login to add items to your cart.");
+
+          setTimeout(() => {
+            navigate("/login");
+          }, 1500);
+
+          return;
         }
-      };
+
+        toast.error(error.response?.data?.error || "Something went wrong");
+      }
+    };
+
+
+    const handleAddToWishlist = async () => {
+      try {
+        await api.post("api/user/add_to_wishlist/", {
+          product_id: product.id,
+        });
+
+        toast.success("Added to wishlist");
+
+      } catch (error) {
+
+        if (error.response?.status === 401) {
+          toast.error("Please login first");
+
+          setTimeout(() => {
+            navigate("/login");
+          }, 1500);
+
+          return;
+        }
+
+        toast.error(error.response?.data?.error || "Something went wrong");
+      }
+    };
 
   useEffect(()=>{
   const fetchProduct = async () => {
@@ -196,11 +235,13 @@ if (loading) {
               <div className="flex items-center gap-4 mt-8">
                 <button
                  onClick={handleAddToCart}
-                 className="bg-[#d8b98a] hover:bg-[#c9a872] transition px-10 py-4 uppercase tracking-[2px] text-[11px]">
+                 className="bg-[#d8b98a] hover:bg-[#a77a33] cursor-pointer transition px-10 py-4 uppercase tracking-[2px] text-[11px]">
                   Add To Bag
                 </button>
 
-                <button className="text-xl">
+                <button 
+                  onClick={handleAddToWishlist}
+                  className="text-xl cursor-pointer">
                   <FiHeart />
                 </button>
 

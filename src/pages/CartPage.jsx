@@ -5,23 +5,21 @@ import api from "../api/api";
 function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
 
   useEffect(() => {
-  fetchCart();
-}, []);
+    fetchCart();
+  }, []);
 
   const fetchCart = async () => {
     try {
-      const response = await api.get(
-        "api/user/view_cart/"
-      );
+      const response = await api.get("api/user/view_cart/");
 
       setCartItems(response.data.items);
+      setSubtotal(response.data.subtotal);
+      setTotal(response.data.total);
 
     } catch (error) {
       console.error(error);
@@ -94,10 +92,6 @@ const removeItem = async (itemId) => {
                     <div className="flex-1">
                       <div className="flex justify-between">
                         <div>
-                          <h3 className="text-xl font-serif">
-                            {item.brand}
-                          </h3>
-
                           <p className="text-[#777] mt-1">
                             {item.name}
                           </p>
@@ -127,14 +121,12 @@ const removeItem = async (itemId) => {
                       <div className="flex justify-between mt-12">
                         <p>
                           Unit Price: ₹
-                          {item.price.toLocaleString()}
+                          {item.price}
                         </p>
 
                         <p className="font-medium">
                           Total Price: ₹
-                          {(
-                            item.price * item.quantity
-                          ).toLocaleString()}
+                          {total.toLocaleString()}
                         </p>
                       </div>
                     </div>
