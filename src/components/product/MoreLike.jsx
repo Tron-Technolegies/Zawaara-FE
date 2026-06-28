@@ -34,31 +34,7 @@ function MoreLike() {
           name: "Black Kiran Co-ord Set",
           price: "₹11,500",
           image: "/product/product_morelike5.jpg",
-        },
-        {
-          id: 6,
-          name: "Emerald Silk Suit",
-          price: "₹24,000",
-          image: "/product/product_morelike6.jpg",
-        },
-               {
-          id: 6,
-          name: "Emerald Silk Suit",
-          price: "₹24,000",
-          image: "/product/product_morelike7.jpg",
-        },
-               {
-          id: 6,
-          name: "Emerald Silk Suit",
-          price: "₹24,000",
-          image: "/product/product_morelike8.jpg",
-        },
-               {
-          id: 6,
-          name: "Emerald Silk Suit",
-          price: "₹24,000",
-          image: "/product/product_morelike9.jpgg",
-        },
+        }
       ];
     
       const scrollLeft = () => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiSearch, FiUser, FiHeart,FiMenu, FiX } from "react-icons/fi";
+import { FiUser, FiHeart, FiMenu, FiX } from "react-icons/fi";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { NavLink, Link, useLocation } from "react-router-dom";
 
@@ -21,7 +21,7 @@ const Navbar = () => {
     
    useEffect(() => {
   const handleScroll = () => {
-    setScrolled(window.scrollY > window.innerHeight - 70);
+    setScrolled(window.scrollY > window.innerHeight - 60);
   };
 
   window.addEventListener("scroll", handleScroll);
@@ -57,33 +57,27 @@ const Navbar = () => {
     ? "bg-transparent"
     : "bg-white"
 }`}>
-      <div className="max-w-[1800px] mx-auto px-6 lg:px-10 h-[70px]  flex items-center justify-between relative">
+      <div className="max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 h-[50px] md:h-[60px] flex items-center justify-between relative">
         
         {/* Left Menu */}
-        <nav className={` hidden lg:flex items-center gap-10 font-regular  `}>
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8 font-regular">
           <NavLink
             to="/new-arrivals"
-            className={
-              `text-[15px] uppercase tracking-[2px] hover:text-neutral-600 ${textColor} `
-            }
+            className={`text-[13px] uppercase tracking-[1.5px] hover:text-neutral-600 ${textColor}`}
           >
             Collections
           </NavLink>
 
           {/* <NavLink
             to="/clothing"
-            className={
-              `text-[15px] uppercase tracking-[2px]  hover:text-neutral-600 ${textColor} `
-            }
+            className={`text-[13px] uppercase tracking-[1.5px] hover:text-neutral-600 ${textColor}`}
           >
             Clothing
           </NavLink> */}
 
           <NavLink
             to="/bridal"
-            className={
-              `text-[15px] uppercase tracking-[2px]  hover:text-neutral-600 ${textColor}`
-            }
+            className={`text-[13px] uppercase tracking-[1.5px] hover:text-neutral-600 ${textColor}`}
           >
             Bridal
           </NavLink>
@@ -91,9 +85,7 @@ const Navbar = () => {
           <NavLink
             to="/"
             end
-            className={
-              `text-[15px] uppercase tracking-[2px]  hover:text-neutral-600 ${textColor}`
-            }
+            className={`text-[13px] uppercase tracking-[1.5px] hover:text-neutral-600 ${textColor}`}
           >
             Home
           </NavLink>
@@ -106,9 +98,9 @@ const Navbar = () => {
             className={textColor}
           >
             {menuOpen ? (
-              <FiX className="text-2xl" />
+              <FiX className="text-xl" />
             ) : (
-              <FiMenu className="text-2xl" />
+              <FiMenu className="text-xl" />
             )}
           </button>
         </div>
@@ -119,76 +111,67 @@ const Navbar = () => {
           <img
             src="/logo/Zawara-logo.png"
             alt="ZAWARA"
-            className="h-4 lg:h-8 w-auto"
+            className="h-4 sm:h-5 lg:h-6 w-auto"
             />
         </div>
 
         {/* Right Section */}
-        <div className="ml-auto hidden lg:flex items-center gap-3 lg:gap-6">
-          {/* Search */}
-          <div className="hidden xl:flex items-center border-b border-neutral-600 pb-1 min-w-[240px]">
-            <FiSearch className={`${textColor} text-[20px]`} />
-            <input
-              type="text"
-              placeholder="Search..."
-              className={`bg-transparent outline-none px-3 hover:text-neutral-600 ${textColor} ${
-                        isHeroPage && !scrolled
-                          ? "placeholder:text-white/80"
-                          : "placeholder:text-gray-700"
-                      } w-full`}
-            />
-          </div>
+        <div className="ml-auto hidden lg:flex items-center gap-3 xl:gap-5">
+
 
           {/* User */}
-          <div className="relative">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="hover:text-neutral-600 text-black cursor-pointer"
-              >
-                <FiUser className={`text-[24px] ${textColor}`} />
-              </button>
+          <div
+  className="relative"
+  onMouseEnter={() => setIsOpen(true)}
+  onMouseLeave={() => setIsOpen(false)}
+>
+  <button className="hover:text-neutral-600 cursor-pointer">
+    <FiUser className={`text-[20px] xl:text-[22px] ${textColor}`} />
+  </button>
 
-              {isOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
-                {!token ? (
-                  <Link
-                    to="/login"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100"
-                  >
-                    Login
-                  </Link>
-                ) : (
-                  <>
-                    <Link
-                      to="/myaccount"
-                      className="block px-4 py-3 text-sm hover:bg-gray-100"
-                    >
-                      My Account
-                    </Link>
+  {isOpen && (
+    <div className="absolute right-0 top-full pt-2 z-50">
+      <div className="w-40 bg-white  rounded-lg shadow-lg">
+        {!token ? (
+          <Link
+            to="/login"
+            className="block px-4 py-3 text-xs hover:bg-gray-100"
+          >
+            Login
+          </Link>
+        ) : (
+          <>
+            <Link
+              to="/myaccount"
+              className="block px-4 py-3 text-xs hover:bg-gray-100"
+            >
+              My Account
+            </Link>
 
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-3 text-sm hover:bg-gray-100"
-                >
-                  Logout
-                </button>
-              </>
-            )}
-          </div>
+            <button
+              onClick={handleLogout}
+              className="w-full text-left px-4 py-3 text-xs hover:bg-gray-100 cursor-pointer"
+            >
+              Logout
+            </button>
+          </>
         )}
-        </div>
+      </div>
+    </div>
+  )}
+</div>
 
           {/* Wishlist */}
           <Link to="/wishlist" >
           <button className=" hover:text-neutral-600 text-black cursor-pointer">
-            <FiHeart className={`text-[24px] ${textColor}`}  />
+            <FiHeart className={`text-[20px] xl:text-[22px] ${textColor}`}  />
           </button>
           </Link>
 
           {/* Cart */}
           <Link to='/cart'>
           <button className="relative  hover:text-neutral-600 text-black cursor-pointer">
-            <HiOutlineShoppingBag className={`text-[26px] ${textColor}`}  />
+            <HiOutlineShoppingBag className={`text-[22px] xl:text-[24px] ${textColor}`}  />
           </button>
           </Link>
         </div>
@@ -197,7 +180,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
 {menuOpen && (
   <div
-    className={`lg:hidden absolute top-[70px] left-0 w-full ${
+    className={`lg:hidden absolute top-[50px] md:top-[60px] left-0 w-full ${
       location.pathname === "/" ||
       location.pathname === "/bridal"
         ? "bg-black/90"
@@ -205,78 +188,63 @@ const Navbar = () => {
     } shadow-lg`}
   >
 
-    {/* Search */}
-    <div className="px-6 pt-6">
-      <div className="flex items-center border-b border-gray-500 pb-2">
-        <FiSearch className={`text-[20px] ${textColor}`} />
-        <input
-          type="text"
-          placeholder="Search..."
-          className="bg-transparent outline-none px-3 w-full text-white placeholder:text-gray-300"
-        />
+
+
+    {/* Mobile Menu Content */}
+    <div className="px-6 py-6 border-t border-neutral-500/20 mt-2 flex flex-col gap-6">
+      {/* Navigation Links */}
+      <nav className="flex flex-col gap-5">
+        <NavLink
+          to="/"
+          onClick={() => setMenuOpen(false)}
+          className={`uppercase tracking-[2px] text-xs font-medium ${mobileTextColor} hover:opacity-85 transition`}
+        >
+          Home
+        </NavLink>
+        <NavLink
+          to="/new-arrivals"
+          onClick={() => setMenuOpen(false)}
+          className={`uppercase tracking-[2px] text-xs font-medium ${mobileTextColor} hover:opacity-85 transition`}
+        >
+          Collections
+        </NavLink>
+        <NavLink
+          to="/bridal"
+          onClick={() => setMenuOpen(false)}
+          className={`uppercase tracking-[2px] text-xs font-medium ${mobileTextColor} hover:opacity-85 transition`}
+        >
+          Bridal
+        </NavLink>
+      </nav>
+
+      {/* Divider */}
+      <div className="h-px bg-neutral-500/10 w-full" />
+
+      {/* Icons */}
+      <div className="flex items-center gap-6">
+        <Link
+          to="/login"
+          onClick={() => setMenuOpen(false)}
+          className="hover:opacity-80 transition"
+        >
+          <FiUser className={`text-[20px] ${mobileTextColor}`} />
+        </Link>
+        <Link
+          to="/wishlist"
+          onClick={() => setMenuOpen(false)}
+          className="hover:opacity-80 transition"
+        >
+          <FiHeart className={`text-[20px] ${mobileTextColor}`} />
+        </Link>
+        <Link
+          to="/cart"
+          onClick={() => setMenuOpen(false)}
+          className="hover:opacity-80 transition"
+        >
+          <HiOutlineShoppingBag className={`text-[20px] ${mobileTextColor}`} />
+        </Link>
       </div>
     </div>
-
-    {/* Mobile Icons */}
-    <div className="flex items-center justify-center gap-8 py-6">
-
-      <Link
-        to="/login"
-        onClick={() => setMenuOpen(false)}
-      >
-        <FiUser className={`text-2xl ${mobileTextColor}`} />
-      </Link>
-
-      <Link
-        to="/wishlist"
-        onClick={() => setMenuOpen(false)}
-      >
-        <FiHeart className={`text-2xl ${mobileTextColor}`} />
-      </Link>
-
-      <Link
-        to="/cart"
-        onClick={() => setMenuOpen(false)}
-      >
-        <HiOutlineShoppingBag className={`text-2xl ${mobileTextColor}`}/>
-      </Link>
-
-    </div>
-
-    {/* Navigation Links */}
-    <nav className="flex flex-col pb-6">
-      <NavLink
-        to="/"
-        onClick={() => setMenuOpen(false)}
-        className={`px-6 py-4 uppercase tracking-[2px] text-sm ${mobileTextColor}`}
-      >
-        Home
-      </NavLink>
-
-      <NavLink
-        to="/new-arrivals"
-        onClick={() => setMenuOpen(false)}
-        className={`px-6 py-4 uppercase tracking-[2px] text-sm ${mobileTextColor}`}
-      >
-        New In
-      </NavLink>
-
-      {/* <NavLink
-        to="/clothing"
-        onClick={() => setMenuOpen(false)}
-        className={`px-6 py-4 uppercase tracking-[2px] text-sm ${mobileTextColor}`}
-      >
-        Clothing
-      </NavLink> */}
-
-      <NavLink
-        to="/bridal"
-        onClick={() => setMenuOpen(false)}
-        className={`px-6 py-4 uppercase tracking-[2px] text-sm ${mobileTextColor}`}
-      >
-        Bridal
-      </NavLink>
-    </nav>
   </div>
 )}
     </header>

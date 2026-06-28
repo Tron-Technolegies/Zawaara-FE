@@ -1,8 +1,10 @@
 import { useState,useEffect } from "react";
 import { FiX, FiShare2 } from "react-icons/fi";
 import api from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 function CartPage() {
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [subtotal, setSubtotal] = useState(0);
@@ -53,6 +55,32 @@ const removeItem = async (itemId) => {
   }
 };
 
+   
+ const updateQuantity = async (itemId,quantity)=>{
+  try{
+    await api.patch(`api/user/update_cart_quantity/${itemId}/`,
+      {
+        quantity
+      }
+    );
+
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              quantity,
+            }
+          : item
+      )
+    );
+
+    fetchCart();
+      }catch(error){
+        console.log(error);
+      }
+    };
+
   return (
     <section className="bg-[#f8f7f4] py-8 md:py-12">
       <div className="max-w-[1400px] mx-auto px-4">
@@ -79,46 +107,67 @@ const removeItem = async (itemId) => {
                   key={item.id}
                   className="bg-white border border-[#e5e5e5] p-5"
                 >
-                  <div className="flex flex-col md:flex-row gap-5">
+                  <div className="flex gap-4 md:gap-5">
 
                     {/* Image */}
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-full md:w-[140px] h-[190px] object-cover"
+                      className="w-[90px] sm:w-[120px] md:w-[140px] h-[120px] sm:h-[160px] md:h-[190px] shrink-0 object-cover"
                     />
 
                     {/* Content */}
-                    <div className="flex-1">
-                      <div className="flex justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start gap-2">
                         <div>
-                          <p className="text-[#777] mt-1">
+                          <p className="text-[#777] mt-1 text-sm md:text-base">
                             {item.name}
                           </p>
                         </div>
 
-                        <button onClick={() => removeItem(item.id)}>
+                        <button onClick={() => removeItem(item.id)} className="cursor-pointer shrink-0">
                           <FiX />
                         </button>
                       </div>
 
-                      <div className="flex flex-wrap gap-4 mt-6">
+                      <div className="flex flex-wrap gap-2 sm:gap-4 mt-4 md:mt-6">
 
-                        <select className="border px-3 py-2">
+                        <select className="border px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm">
                           <option>Size: {item.size}</option>
                         </select>
 
-                        <div className="flex border">
-                          <button className="px-3 py-2">-</button>
-                          <span className="px-4 py-2 border-x">
+                        <div className="flex border text-xs sm:text-sm">
+                          <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.id,
+                                    item.quantity - 1
+                                  )
+                                }
+                                className="px-2 sm:px-3 py-1 sm:py-2"
+                                disabled={item.quantity === 1}
+                              >
+                                -
+                              </button>
+                          <span className="px-3 sm:px-4 py-1 sm:py-2 border-x">
                             {item.quantity}
                           </span>
-                          <button className="px-3 py-2">+</button>
+                          <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.id,
+                                    item.quantity + 1
+                                  )
+                                }
+                                className="px-2 sm:px-3 py-1 sm:py-2"
+                              >
+                                +
+                              </button>
                         </div>
 
                       </div>
 
-                      <div className="flex justify-between mt-12">
+                      <div className="flex justify-between mt-6 md:mt-12 text-xs sm:text-sm md:text-base">
                         <p>
                           Unit Price: ₹
                           {item.price}
@@ -171,48 +220,61 @@ const removeItem = async (itemId) => {
               <button>📋</button>
             </div>
 
-            {/* Summary */}
-            <div className="bg-white border p-5 sticky top-28">
-              <h3 className="uppercase text-[11px] tracking-[2px] mb-6">
-                Price Summary ({cartItems.length} Item)
-              </h3>
+            {/* Sticky Container for Summary & Share Cart */}
+            <div className="lg:sticky lg:top-28 space-y-5">
+              {/* Summary */}
+              <div className="bg-white border p-5">
+                <h3 className="uppercase text-[11px] tracking-[2px] mb-6">
+                  Price Summary ({cartItems.length} Item)
+                </h3>
 
-              <div className="space-y-4 text-sm">
-                <div className="flex justify-between">
-                  <span>Total MRP</span>
-                  <span>₹{subtotal.toLocaleString()}</span>
+                <div className="space-y-4 text-sm">
+                  <div className="flex justify-between">
+                    <span>Total MRP</span>
+                    <span>₹{subtotal.toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>₹{subtotal.toLocaleString()}</span>
+                  </div>
                 </div>
 
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
+                <hr className="my-6" />
+
+                <div className="flex justify-between text-xl font-serif">
+                  <span>Total</span>
                   <span>₹{subtotal.toLocaleString()}</span>
                 </div>
+                <button
+                  onClick={() =>
+                    navigate("/checkout", {
+                      state: {
+                        items: cartItems,
+                        subtotal,
+                        total,
+                      },
+                    })
+                  }
+                  className="w-full bg-[#4a4a4a] text-white py-4 mt-6 uppercase tracking-[3px] text-[11px] cursor-pointer"
+                >
+                  Checkout
+                </button>
               </div>
 
-              <hr className="my-6" />
+              {/* Share Cart */}
+              <div className="bg-white border p-4 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <FiShare2 />
+                  <span className="uppercase text-[11px] tracking-[2px]">
+                    Share Shopping Cart
+                  </span>
+                </div>
 
-              <div className="flex justify-between text-xl font-serif">
-                <span>Total</span>
-                <span>₹{subtotal.toLocaleString()}</span>
+                <button className="uppercase text-[11px] tracking-[2px]">
+                  Share
+                </button>
               </div>
-
-              <button className="w-full bg-[#4a4a4a] text-white py-4 mt-6 uppercase tracking-[3px] text-[11px]">
-                Checkout
-              </button>
-            </div>
-
-            {/* Share Cart */}
-            <div className="bg-white border p-4 flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <FiShare2 />
-                <span className="uppercase text-[11px] tracking-[2px]">
-                  Share Shopping Cart
-                </span>
-              </div>
-
-              <button className="uppercase text-[11px] tracking-[2px]">
-                Share
-              </button>
             </div>
 
           </div>

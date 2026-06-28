@@ -8,9 +8,13 @@ import JustArrived from "../components/home/JustArrived"
 import ShopByCategories from "../components/home/ShopByCategories"
 import SummerChronicles from "../components/home/SummerChronicles"
 import CommunitySection from "../components/home/CommunitySection"
+import { useEffect } from "react"
 
 
 const Home = () => {
+  useEffect(()=>{
+        window.scrollTo(0, 0)
+      }, [])
   return (
     <div>
       <HeroSection/>

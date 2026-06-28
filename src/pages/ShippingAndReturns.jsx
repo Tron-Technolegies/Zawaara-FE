@@ -20,35 +20,20 @@ const ShippingAndReturns = () => {
           {/* Shipping Policy */}
           <section>
             <h2 className="text-2xl font-semibold mb-3">
-              Shipping Policy
+              Shipping Details
             </h2>
 
-            <p>
-              We strive to process and deliver your orders as quickly as
-              possible. Orders are typically processed within 1–3 business
-              days after payment confirmation.
+            <p className="mb-4">
+              We provide shipping and delivery of our Products all across India and most of the countries across the world. We aim to provide the best customer experience for you by tying-up and partnering with leading logistics service providers to handle your order in the best possible way and to ensure that you have a hassle-free experience in receiving the Product that you have ordered from our online store. We make all commercially reasonable endeavours to ensure that the Products are delivered to you in a timely fashion.
             </p>
 
-            <ul className="list-disc pl-6 mt-4 space-y-2">
-              <li>Orders are processed Monday through Saturday.</li>
-              <li>Shipping times may vary depending on your location.</li>
-              <li>Tracking information will be provided once your order ships.</li>
-              <li>Delivery delays may occur during holidays or peak seasons.</li>
-              <li>Shipping charges are calculated during checkout.</li>
-            </ul>
-          </section>
-
-          {/* Delivery Times */}
-          <section>
-            <h2 className="text-2xl font-semibold mb-3">
-              Estimated Delivery Times
-            </h2>
-
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Kerala: 2–5 business days</li>
-              <li>South India: 3–7 business days</li>
-              <li>Rest of India: 5–10 business days</li>
-              <li>Remote locations may require additional time.</li>
+            <ul className="list-disc pl-6 space-y-2 mt-4 text-[#c5c5c5]">
+              <li>Ready products will be dispatched within 24 hours.</li>
+              <li>For any alteration / customisation you can communicate with our designer: <strong>9047810000</strong>.</li>
+              <li>Our team will get in touch with you as soon as the order is placed.</li>
+              <li>All India shipping available.</li>
+              <li>For our customers in Kerala, delivery will be within 5-10 working days.</li>
+              <li>Shipping time depends on the delivery address you provide.</li>
             </ul>
           </section>
 

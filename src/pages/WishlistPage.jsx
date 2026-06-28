@@ -4,6 +4,9 @@ import { toast } from "react-toastify";
 import api from "../api/api";
 
 function WishlistPage() {
+  useEffect(()=>{
+      window.scrollTo(0, 0)
+    }, [])
 
       const [wishlist, setWishlist] = useState([]);
       const [loading, setLoading] = useState(true);
@@ -11,6 +14,7 @@ function WishlistPage() {
 
 
       useEffect(() => {
+        
           fetchWishlist();
       }, []);
 
@@ -67,11 +71,8 @@ function WishlistPage() {
             await api.post("api/user/add_to_cart/", {
               product_id: product.product_id,
               quantity: 1,
+              size: product.size,
             });
-
-            await api.delete(
-              `api/user/remove_wishlist_item/${product.id}/`
-            );
 
             fetchWishlist();
 

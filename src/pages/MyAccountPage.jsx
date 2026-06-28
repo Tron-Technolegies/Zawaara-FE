@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {
   FiUser,
   FiPackage,
@@ -12,7 +12,10 @@ import OrdersReturns from "../components/profile/OrdersReturns";
 import AddressBook from "../components/profile/AddressBook";
  
 function MyAccountPage() {
-  const [activeTab, setActiveTab] = useState(null);
+  useEffect(()=>{
+        window.scrollTo(0, 0)
+      }, [])
+  const [activeTab, setActiveTab] = useState("account");
 
   const menuItems = [
     {
@@ -25,11 +28,11 @@ function MyAccountPage() {
       label: "Orders & Returns",
       icon: <FiPackage />,
     },
-    {
-      id: "wishlist",
-      label: "My Wishlist",
-      icon: <FiHeart />,
-    },
+    // {
+    //   id: "wishlist",
+    //   label: "My Wishlist",
+    //   icon: <FiHeart />,
+    // },
     {
       id: "address",
       label: "Address Book",

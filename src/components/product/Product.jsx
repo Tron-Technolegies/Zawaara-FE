@@ -131,29 +131,44 @@ if (loading) {
 }
 
     return (
-      <section className="bg-[#f8f7f4] min-h-screen">
-        <div className="max-w-[1600px] mx-auto px-4 lg:px-6 py-6">
+      <section className="bg-[#f8f7f4]   min-h-screen">
+        <div className="max-w-[1300px] mx-auto px-4 lg:px-6 py-6">
 
-          {/* Breadcrumb */}
-          <div className="text-[11px] uppercase tracking-[2px] text-[#777] mb-6">
-            Home / Apparel / Dress / Long Dresses /
-            <span className="text-[#333]">
-              {" "}{product?.name}
-            </span>
+          {/* Back Button Container */}
+          <div className="mb-6">
+            <button
+              onClick={() => navigate("/new-arrivals")}
+              className="flex items-center gap-2 text-[11px] uppercase tracking-[2px] text-[#555] hover:text-black transition cursor-pointer"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              <span>Back</span>
+            </button>
           </div>
 
-          <div className="grid lg:grid-cols-[55%_45%] gap-10">
+          <div className="grid lg:grid-cols-[55%_45%] gap-20">
 
             {/* LEFT SIDE */}
-            <div>
+            <div className="ml-[-99px]">
 
               {/* Main Image */}
-              <div className="bg-white overflow-hidden">
+              <div className="bg-white overflow-hidden aspect-[3/4]">
                 <img
                   src={selectedImage || "/placeholder.png"}
                   // src="/product/product_image1.png"
                   alt="Product"
-                  className="w-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
               </div>
 
@@ -325,8 +340,19 @@ if (loading) {
                     Shipping
                   </summary>
 
-                  <div className="pb-5 text-sm text-[#666]">
-                    Free shipping on all prepaid orders.
+                  <div className="pb-5 text-sm text-[#666] space-y-3">
+                    <p>
+                      We provide shipping and delivery of our Products all across India and most of the countries across the world. Ready products will be dispatched within 24 hours.
+                    </p>
+                    <p>
+                      For our customers in Kerala, delivery will be within 5-10 working days. Shipping time depends on the delivery address you provide.
+                    </p>
+                    <p>
+                      For any alteration / customisation you can communicate with our designer: <strong>9047810000</strong>.
+                    </p>
+                    <p>
+                      Our team will get in touch with you as soon as the order is placed. All India shipping is available.
+                    </p>
                   </div>
                 </details>
 

@@ -19,6 +19,7 @@ import SizeGuide from "./pages/SizeGuide";
 import ResetPassword from "./components/login/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CheckoutPage from "./pages/CheckOutPage";
 
 
 const router = createBrowserRouter([
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
       {
         path:"/resetpassword/:uid/:token",
         element:<ResetPassword/>
+      },
+      {
+        path:"/checkout",
+        element:<CheckoutPage/>
       }
   
 
