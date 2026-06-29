@@ -1,4 +1,4 @@
-
+import { Link } from "react-router-dom"
 
 function HeritageBloom() {
   return (
@@ -19,10 +19,12 @@ function HeritageBloom() {
                 Expressive prints and effortless
                 silhouettes redefining tradition
               </p>
-
+            
+            <Link to="/new-arrivals?sections=heritage_blooms">
               <button className="bg-black text-white uppercase tracking-[3px] text-xs px-10 py-4 hover:bg-[#222] transition duration-300">
                 Discover
               </button>
+            </Link>
             </div>
           </div>
 

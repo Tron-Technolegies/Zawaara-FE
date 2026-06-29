@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import api from "../../api/api"; // Adjust the path if needed
+import { Link } from "react-router-dom";
 
 function ProductNewArrival() {
     const sliderRef = useRef(null);
@@ -70,15 +71,11 @@ function ProductNewArrival() {
             "
           >
             {products.map((product) => (
-              <div
+              <Link
+                to={`/product/${product.id}`}
                 key={product.id}
-                className="
-                  flex-shrink-0
-                  w-[180px]
-                  sm:w-[220px]
-                  md:w-[240px]
-                "
-              >
+                className="flex-shrink-0 w-[180px] sm:w-[220px] md:w-[240px]"
+>
                 <div className="overflow-hidden bg-white">
                   <img
                     src={product.image}
@@ -102,7 +99,7 @@ function ProductNewArrival() {
                     ₹ {Number(product.price).toLocaleString("en-IN")}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 

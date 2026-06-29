@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api";
-import { Link, useParams,useLocation  } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
-function ProductGrid({ searchQuery, selectedFilters }) {
+function FeaturedProductGrid({ searchQuery, selectedFilters }) {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const { categoryId } = useParams();
-  const location = useLocation();
-
-  const queryParams = new URLSearchParams(location.search);
-  const featured = queryParams.get("featured");
 
   const fetchProducts = async (pageNumber) => {
     try {
@@ -59,9 +55,6 @@ function ProductGrid({ searchQuery, selectedFilters }) {
           if (minPrice) params.append("min_price", minPrice);
         }
       }
-      if (featured === "true") {
-          params.append("featured", "true");
-        }
 
       const url = `api/user/view_products/?${params.toString()}`;
       const response = await api.get(url);
@@ -93,7 +86,7 @@ function ProductGrid({ searchQuery, selectedFilters }) {
     setPage(1);
     setHasMore(true);
     fetchProducts(1);
-  }, [categoryId, searchQuery, selectedFilters,featured]);
+  }, [categoryId, searchQuery, selectedFilters]);
 
   const loadMore = () => {
     const nextPage = page + 1;
@@ -171,4 +164,4 @@ function ProductGrid({ searchQuery, selectedFilters }) {
   );
 }
 
-export default ProductGrid;
+export default FeaturedProductGrid;

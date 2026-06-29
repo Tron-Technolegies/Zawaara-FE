@@ -20,6 +20,8 @@ import ResetPassword from "./components/login/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CheckoutPage from "./pages/CheckOutPage";
+import FeaturedPage from "./pages/FeaturedPage";
+import ContactPage from "./pages/ContactPage";
 
 
 const router = createBrowserRouter([
@@ -107,6 +109,14 @@ const router = createBrowserRouter([
       {
         path:"/checkout",
         element:<CheckoutPage/>
+      },
+      {
+        path:"/featured",
+        element:<FeaturedPage/>
+      },
+      {
+        path:"/contactus",
+        element:<ContactPage/>
       }
   
 

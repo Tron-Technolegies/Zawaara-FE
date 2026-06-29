@@ -61,6 +61,7 @@ const Navbar = () => {
         
         {/* Left Menu */}
         <nav className="hidden lg:flex items-center gap-6 xl:gap-8 font-regular">
+
           <NavLink
             to="/new-arrivals"
             className={`text-[13px] uppercase tracking-[1.5px] hover:text-neutral-600 ${textColor}`}

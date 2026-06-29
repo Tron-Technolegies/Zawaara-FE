@@ -1,6 +1,27 @@
-
+import { useNavigate } from "react-router-dom";
+import api from "../../api/api";
 
 function FeaturedLook() {
+  const navigate = useNavigate();
+
+  const handleViewDetails = async () => {
+    try {
+      const response = await api.get(
+        "/api/user/view_products/?name=The Royal Zardosi Ensemble&limit=1"
+      );
+
+      if (response.data.products.length > 0) {
+        const product = response.data.products[0];
+
+        navigate(`/product/${product.id}`);
+      } else {
+        alert("Product not found");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <section className="bg-[#f8f7f4]  py-16 md:py-20 ">
       <div className="max-w-[1300px]  px-6 lg:px-10">
@@ -61,7 +82,10 @@ function FeaturedLook() {
             </div>
 
             {/* Button */}
-            <button className="mt-12 bg-[#5a1f24] hover:bg-[#4a181c] text-white uppercase tracking-[2px] text-xs px-10 py-4 transition duration-300">
+            <button
+              onClick={handleViewDetails}
+              className="mt-12 bg-[#5a1f24] hover:bg-[#4a181c] text-white uppercase tracking-[2px] text-xs px-10 py-4 transition duration-300"
+            >
               View Details
             </button>
           </div>

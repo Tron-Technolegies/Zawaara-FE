@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 
 
@@ -6,12 +6,14 @@ const collections = [
     {
       id: 1,
       title: "The Velvet Edit",
+      section: "curated_red_velvet",
       image: "home/curatededits/velvet_edits.jpg",
       overlay: "from-black/50 via-black/10 to-transparent",
     },
     {
       id: 2,
       title: "Chanderi Silks",
+      section: "curated_chanderi_silks",
       image: "home/curatededits/chanderisilks.jpg",
       overlay: "from-black/40 via-black/5 to-transparent",
     },
@@ -56,12 +58,11 @@ const CuratedEdits = () => {
                   {item.title}
                 </h3>
               
-              
-                <button 
-                onClick={() => navigate(`/product/${collections.id}`)}
-                className="border border-white text-white px-6 py-2 text-[10px] md:text-xs uppercase tracking-[2px] hover:bg-white hover:text-black transition duration-300">
+              <Link to={`/new-arrivals?sections=${item.section}`}>
+                <button className="border border-white text-white px-6 py-2 text-[10px] md:text-xs uppercase tracking-[2px] hover:bg-white hover:text-black transition duration-300">
                   Shop Collection
                 </button>
+              </Link>
            
               </div>
             </div>

@@ -1,36 +1,26 @@
-
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import api from "../../api/api";
 
 function FeaturedCouture() {
-    const products = [
-    {
-      id: 1,
-      category: "LEHENGAS",
-      name: "The Noor Lehenga",
-      price: "₹ 1,85,000",
-      image: "bridal/bridal_featured/bridal_featured_image1.png",
-    },
-    {
-      id: 2,
-      category: "LEHENGAS",
-      name: "Crimson Empress",
-      price: "₹ 2,45,000",
-      image: "bridal/bridal_featured/bridal_featured_image2.png",
-    },
-    {
-      id: 3,
-      category: "SAREES",
-      name: "Golden Hour Chanderi",
-      price: "₹ 85,000",
-      image: "bridal/bridal_featured/bridal_featured_image3.png",
-    },
-    {
-      id: 4,
-      category: "SUITS",
-      name: "Emerald Zari Anarkali",
-      price: "₹ 1,15,000",
-      image: "bridal/bridal_featured/bridal_featured_image4.png",
-    },
-  ];
+  const [products, setProducts] = useState([]);
+
+useEffect(() => {
+  fetchFeaturedProducts();
+}, []);
+
+const fetchFeaturedProducts = async () => {
+  try {
+    const response = await api.get(
+      "api/user/latest-featured-products/?limit=4"
+    );
+
+    setProducts(response.data.products);
+  } catch (error) {
+    console.error("Error fetching featured products:", error);
+  }
+};
+   
 
   return (
     <section className="bg-[#f8f7f4] py-16 md:py-24">
@@ -65,17 +55,23 @@ function FeaturedCouture() {
             <h3 className="font-serif text-[#1d1d1d] text-3xl md:text-5xl tracking-[3px] uppercase">
               Featured Couture
             </h3>
-
+          <Link to="/new-arrivals?featured=true">
             <button className="uppercase text-[11px] tracking-[3px] text-[#555] hover:text-black transition">
               View All
             </button>
+          </Link>
+
           </div>
         </div>
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => (
-            <div key={product.id} className="group">
+            <Link
+                key={product.id}
+                to={`/product/${product.id}`}
+                className="group"
+              >
               
               {/* Product Image */}
               <div className="overflow-hidden bg-white">
@@ -89,7 +85,7 @@ function FeaturedCouture() {
               {/* Product Info */}
               <div className="mt-4">
                 <p className="text-[10px] uppercase tracking-[2px] text-[#9c9c9c]">
-                  {product.category}
+                  {product.category?.name}
                 </p>
 
                 <div className="flex justify-between items-start mt-2 gap-3">
@@ -98,12 +94,12 @@ function FeaturedCouture() {
                   </h4>
 
                   <span className="text-[#1d1d1d] text-sm whitespace-nowrap">
-                    {product.price}
+                    ₹ {Number(product.price).toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
 
-            </div>
+            </Link>
           ))}
         </div>
 

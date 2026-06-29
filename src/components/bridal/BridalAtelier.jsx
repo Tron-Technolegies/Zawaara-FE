@@ -1,6 +1,24 @@
 
 
 function BridalAtelier() {
+  const handleAppointment = () => {
+  const phone = "9207018422"; // Your WhatsApp number
+  const message = encodeURIComponent(
+    `
+      Hello Zawara,
+
+      I would like to book an appointment.
+
+      Name:
+      Phone:
+      Preferred Date:
+      Preferred Time:
+      Service:
+      `
+  );
+
+  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+};
   return (
    <section className="bg-[#f8f7f4] py-12 md:py-20">
       <div className="max-w-[1800px] mx-auto px-4 md:px-8">
@@ -40,7 +58,8 @@ function BridalAtelier() {
               </p>
 
               {/* Button */}
-              <button className="mt-12 border border-[#777] px-8 md:px-12 py-4 uppercase tracking-[3px] text-[11px] text-[#333] hover:bg-black hover:text-white transition duration-300">
+              <button
+              onClick={handleAppointment} className="mt-12 border border-[#777] px-8 md:px-12 py-4 uppercase tracking-[3px] text-[11px] text-[#333] hover:bg-black hover:text-white transition duration-300">
                 Book An Appointment
               </button>
 

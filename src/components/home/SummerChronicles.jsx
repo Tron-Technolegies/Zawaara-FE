@@ -1,4 +1,4 @@
-
+import { Link } from "react-router-dom"
 
 function SummerChronicles() {
   return (
@@ -21,9 +21,11 @@ function SummerChronicles() {
                 escapes
               </p>
 
+            <Link to="/new-arrivals?sections=summer_chronicles">
               <button className="mt-10 bg-black text-white uppercase tracking-[3px] text-[11px] px-10 py-4 hover:bg-[#222] transition duration-300">
                 Discover
               </button>
+            </Link>
             </div>
           </div>
 
