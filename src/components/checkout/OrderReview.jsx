@@ -1,6 +1,26 @@
 import { FiCheckCircle } from "react-icons/fi";
+import { useEffect,useState } from "react";
+import api from "../../api/api"
+
 
 export default function OrderReview({ form, order, onBack, onContinue }) {
+  const [address,setAddress]=useState(null);
+  useEffect(()=>{
+    fetchAddress();
+  },[]);
+
+  const fetchAddress = async () => {
+    try{
+      const response = await api.get("api/user/address/default/");
+      setAddress(response.data);
+    }catch(error){
+      console.log(error);
+    }
+  };
+
+
+
+
   return (
     <>
       {/* Heading */}
@@ -20,27 +40,27 @@ export default function OrderReview({ form, order, onBack, onContinue }) {
           Shipping Address
         </h3>
 
-        {form && (form.first_name || form.last_name) ? (
+      {form ? (
           <>
-            <p>
-              {form.first_name} {form.last_name}
+            <p className="font-medium">
+              {[form.first_name, form.last_name].filter(Boolean).join(" ")}
             </p>
 
-            {form.email && <p>{form.email}</p>}
+            {form.email && <p className="text-gray-500">{form.email}</p>}
 
-            {form.address && <p>{form.address}</p>}
-            {form.address_line_1 && <p>{form.address_line_1}</p>}
-            {form.address_line_2 && <p>{form.address_line_2}</p>}
+            <p>{form.address_line_1}</p>
+
+            {form.address_line_2 && (
+              <p>{form.address_line_2}</p>
+            )}
 
             <p>
-              {[form.city, form.state, form.postal_code]
-                .filter(Boolean)
-                .join(", ")}
+              {form.city}, {form.state} - {form.postal_code}
             </p>
 
-            {form.country && <p>{form.country}</p>}
+            <p>{form.country}</p>
 
-            {form.phone && <p>{form.phone}</p>}
+            <p>{form.phone}</p>
           </>
         ) : (
           <p className="text-gray-400 italic">
@@ -90,13 +110,25 @@ export default function OrderReview({ form, order, onBack, onContinue }) {
           </div>
 
           {/* Order Total */}
-          <div className="mt-4 bg-[#fafafa] border border-gray-200 rounded-sm p-4">
+          <div className="mt-4 bg-[#fafafa] border border-gray-200 rounded-sm p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
               <span>₹ {Number(order.subtotal).toLocaleString()}</span>
             </div>
 
-            <div className="flex justify-between text-sm mt-2">
+            {order.discount > 0 && (
+              <div className="flex justify-between text-sm text-green-600">
+                <span>
+                  Discount
+                  {order.couponCode && (
+                    <span className="ml-1 text-xs text-gray-400">({order.couponCode})</span>
+                  )}
+                </span>
+                <span>- ₹ {Number(order.discount).toLocaleString()}</span>
+              </div>
+            )}
+
+            <div className="flex justify-between text-sm">
               <span>Shipping</span>
               <span>{order.shipping === 0 ? "Free" : `₹ ${order.shipping}`}</span>
             </div>

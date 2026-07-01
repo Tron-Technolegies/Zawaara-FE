@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import api from "../../api/api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -26,19 +26,15 @@ import { useNavigate } from "react-router-dom";
     const {id} = useParams();
     console.log(id)
     const [selectedImage, setSelectedImage] = useState("");
-    const [selectedSize, setSelectedSize] = useState("XS");
-
-    const sizes =
-        product?.sizes?.map(
-          (item) => item.size
-        ) || [];
+    const [selectedSize, setSelectedSize] = useState("");
+    const [selectedQuantity, setSelectedQuantity] = useState(1);
 
     const handleAddToCart = async () => {
       try {
         await api.post("api/user/add_to_cart/", {
           product_id: product.id,
           size: selectedSize,
-          quantity: 1,
+          quantity: selectedQuantity,
         });
 
         toast.success("Product added to cart");
@@ -94,6 +90,7 @@ import { useNavigate } from "react-router-dom";
     const data = response.data;
 
     setProduct(data);
+    setSelectedSize(data.size || "");
 
     const productImages = [];
 
@@ -208,29 +205,24 @@ if (loading) {
 
               {/* Size */}
               <div className="mt-10">
-                <div className="flex gap-6 text-[11px] uppercase tracking-[2px]">
-                  <span>Select Size</span>
-                  <button className="underline">
+                <div className="flex gap-6 text-[11px] uppercase tracking-[2px] items-center">
+                  <label htmlFor="size-select">Select Size</label>
+                  <Link to="/sizeguide" className="underline hover:text-[#a77a33] transition">
                     Size Chart
-                  </button>
+                  </Link>
                 </div>
 
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`w-12 h-12 border text-sm
-                      ${
-                        selectedSize === size
-                          ? "bg-black text-white border-black"
-                          : "border-[#ddd]"
-                      }`}
-                    >
-                      {size}
-                    </button>
+                <select
+                  id="size-select"
+                  value={selectedSize}
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                  className="mt-4 border border-[#ddd] px-3 py-2 bg-white text-sm cursor-pointer outline-none focus:border-[#d8b98a] transition min-w-[80px]"
+                >
+                  <option value="" disabled>-- Select a size --</option>
+                  {["S", "M", "L", "XL"].map((size) => (
+                    <option key={size} value={size}>{size}</option>
                   ))}
-                </div>
+                </select>
               </div>
 
               {/* Quantity */}
@@ -239,10 +231,14 @@ if (loading) {
                   Quantity
                 </label>
 
-                <select className="border border-[#ddd] px-4 py-2 bg-white">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
+                <select
+                  value={selectedQuantity}
+                  onChange={(e) => setSelectedQuantity(Number(e.target.value))}
+                  className="border border-[#ddd] px-4 py-2 bg-white cursor-pointer"
+                >
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
                 </select>
               </div>
 
@@ -260,9 +256,9 @@ if (loading) {
                   <FiHeart />
                 </button>
 
-                <button className="text-xl">
+                {/* <button className="text-xl">
                   <FiShare2 />
-                </button>
+                </button> */}
               </div>
 
               <p className="text-xs text-[#777] mt-3">

@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 
 function ContactPage() {
-  const whatsappNumber = "9846080226";
+  const whatsappNumber = "9037810000";
 
   return (
     <div className="bg-[#f8f7f4] min-h-screen">

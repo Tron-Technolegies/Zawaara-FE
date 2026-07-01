@@ -3,12 +3,17 @@ import { FiX, FiShare2 } from "react-icons/fi";
 import api from "../api/api";
 import { useNavigate } from "react-router-dom";
 
+
 function CartPage() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [showCoupons, setShowCoupons] = useState(false);
+  const [coupons, setCoupons] = useState([]);
 
 
   useEffect(() => {
@@ -44,11 +49,7 @@ const removeItem = async (itemId) => {
       `api/user/remove_cart_item/${itemId}/`
     );
 
-    setCartItems(
-      cartItems.filter(
-        (item) => item.id !== itemId
-      )
-    );
+    fetchCart();
 
   } catch (error) {
     console.error(error);
@@ -80,6 +81,54 @@ const removeItem = async (itemId) => {
         console.log(error);
       }
     };
+
+
+  const applyCoupon = async (code = couponCode) => {
+  try {
+    const response = await api.post(
+      "api/user/apply-coupon/",
+      {
+        code,
+        subtotal,
+      }
+    );
+
+    setDiscount(response.data.discount);
+    setTotal(response.data.total);
+
+  } catch (error) {
+    alert(error.response?.data?.error);
+  }
+};
+const fetchCoupons = async () => {
+
+    try{
+
+        const response = await api.get(
+            "api/user/available-coupons/"
+        );
+
+        setCoupons(response.data);
+
+        setShowCoupons(true);
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+const selectCoupon = (coupon) => {
+  setCouponCode(coupon.code);
+
+  setShowCoupons(false);
+
+  applyCoupon(coupon.code);
+};
 
   return (
     <section className="bg-[#f8f7f4] py-8 md:py-12">
@@ -175,7 +224,7 @@ const removeItem = async (itemId) => {
 
                         <p className="font-medium">
                           Total Price: ₹
-                          {total.toLocaleString()}
+                          {(item.price * item.quantity).toLocaleString()}
                         </p>
                       </div>
                     </div>
@@ -190,35 +239,103 @@ const removeItem = async (itemId) => {
           {/* RIGHT SIDE */}
           <div className="space-y-5">
 
-            {/* Coupon */}
             <div className="bg-white border p-5">
-              <p className="uppercase text-[11px] tracking-[2px] mb-4">
-                Coupons
-              </p>
 
-              <div className="bg-[#edf7f1] p-4 flex justify-between items-center">
-                <div>
-                  <p className="font-medium">Apply Coupons</p>
-                  <p className="text-xs text-green-700">
-                    View all offers
-                  </p>
-                </div>
+            <p className="uppercase text-[11px] tracking-[2px] mb-4">
+              Coupons
+            </p>
 
-                <span>›</span>
-              </div>
-            </div>
+            <div className="bg-[#edf7f1] p-4">
 
-            {/* Offer */}
-            <div className="bg-white border p-4 flex justify-between">
-              <div>
-                <p className="font-medium">WELCOME10</p>
-                <p className="text-xs">
-                  Get Flat 10% Off On Your 1st Order
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                placeholder="Enter Coupon"
+                className="border w-full px-3 py-2 mb-3"
+              />
+              {couponCode && (
+                <p className="text-green-600 text-sm mt-2">
+                  Applied Coupon: {couponCode}
                 </p>
+              )}
+
+              <div className="flex justify-between items-center">
+
+                <button
+                  onClick={applyCoupon}
+                  disabled={!couponCode.trim()}
+                  className="bg-black text-white px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Apply
+                </button>
+
+                <button
+                  onClick={fetchCoupons}
+                  className="text-green-700 text-sm"
+                >
+                  View all offers
+                </button>
+
               </div>
 
-              <button>📋</button>
             </div>
+
+          </div>
+
+            {/* Coupon */}
+            {
+            showCoupons && (
+
+                    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+
+                    <div className="bg-white w-[450px] rounded-lg p-6">
+
+                    <h2 className="text-xl font-bold mb-4">
+                    Available Coupons
+                    </h2>
+
+                    {
+                    coupons.map((coupon)=>(
+
+                    <div
+                    key={coupon.id}
+                    className="border rounded p-4 mb-3"
+                    >
+
+                    <h3 className="font-semibold">
+                    {coupon.code}
+                    </h3>
+
+                    <p className="text-sm">
+                    {coupon.description}
+                    </p>
+
+                    <button
+                    onClick={()=>selectCoupon(coupon)}
+                    className="bg-black text-white px-4 py-2 mt-3"
+                    >
+                    Apply
+                    </button>
+
+                    </div>
+
+                    ))
+                    }
+
+                    <button
+                    onClick={()=>setShowCoupons(false)}
+                    className="mt-3"
+                    >
+                    Close
+                    </button>
+
+                    </div>
+
+                    </div>
+
+                    )
+                    }
 
             {/* Sticky Container for Summary & Share Cart */}
             <div className="lg:sticky lg:top-28 space-y-5">
@@ -228,23 +345,30 @@ const removeItem = async (itemId) => {
                   Price Summary ({cartItems.length} Item)
                 </h3>
 
-                <div className="space-y-4 text-sm">
-                  <div className="flex justify-between">
-                    <span>Total MRP</span>
-                    <span>₹{subtotal.toLocaleString()}</span>
-                  </div>
-
-                  <div className="flex justify-between">
+                <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>₹{subtotal.toLocaleString()}</span>
-                  </div>
+
+                    <span>
+                        ₹{subtotal}
+                    </span>
                 </div>
 
-                <hr className="my-6" />
+                <div className="flex justify-between">
+                    <span>Discount</span>
 
-                <div className="flex justify-between text-xl font-serif">
-                  <span>Total</span>
-                  <span>₹{subtotal.toLocaleString()}</span>
+                    <span className="text-green-600">
+                        -₹{discount}
+                    </span>
+                </div>
+
+                <hr/>
+
+                <div className="flex justify-between text-xl">
+                    <span>Total</span>
+
+                    <span>
+                        ₹{total}
+                    </span>
                 </div>
                 <button
                   onClick={() =>
@@ -252,6 +376,8 @@ const removeItem = async (itemId) => {
                       state: {
                         items: cartItems,
                         subtotal,
+                        discount,
+                        couponCode,
                         total,
                       },
                     })
@@ -263,7 +389,7 @@ const removeItem = async (itemId) => {
               </div>
 
               {/* Share Cart */}
-              <div className="bg-white border p-4 flex justify-between items-center">
+              {/* <div className="bg-white border p-4 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <FiShare2 />
                   <span className="uppercase text-[11px] tracking-[2px]">
@@ -274,7 +400,7 @@ const removeItem = async (itemId) => {
                 <button className="uppercase text-[11px] tracking-[2px]">
                   Share
                 </button>
-              </div>
+              </div> */}
             </div>
 
           </div>

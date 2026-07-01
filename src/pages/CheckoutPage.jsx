@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ShippingForm from "../components/checkout/ShippingForm";
 import OrderReview from "../components/checkout/OrderReview";
 import PaymentForm from "../components/checkout/PaymentForm";
@@ -7,6 +7,11 @@ import api from "../api/api";
 
 function CheckoutPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Coupon discount passed from CartPage via navigate state
+  const cartDiscount = location.state?.discount || 0;
+  const cartCouponCode = location.state?.couponCode || "";
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -16,16 +21,20 @@ function CheckoutPage() {
     last_name: "",
     email: "",
     phone: "",
-    address: "",
+    address_line_1: "",
+    address_line_2: "",
     city: "",
     state: "",
+    country: "India",
     postal_code: "",
-    country: "",
+    is_default: true,
   });
 
   const [order, setOrder] = useState({
     subtotal: 0,
     shipping: 0,
+    discount: 0,
+    couponCode: "",
     total: 0,
     items: [],
     currency: "INR",
@@ -47,10 +56,18 @@ function CheckoutPage() {
         return;
       }
 
+      // Apply coupon discount from cart (passed via navigation state)
+      const appliedDiscount = cartDiscount || 0;
+      const discountedTotal = appliedDiscount > 0
+        ? (total || 0) - appliedDiscount
+        : (total || 0);
+
       setOrder({
         subtotal: subtotal || 0,
         shipping: shipping || 0,
-        total: total || 0,
+        discount: appliedDiscount,
+        couponCode: cartCouponCode,
+        total: discountedTotal,
         items: items.map((item) => ({
           id: item.id,
           name: item.name,
@@ -194,7 +211,11 @@ function CheckoutPage() {
             )}
 
             {step === 3 && (
-              <PaymentForm onBack={prevStep}/>
+              <PaymentForm
+                order={order}
+                form={form}
+                onBack={prevStep}
+              />
             )}
 
           </div>
@@ -259,6 +280,18 @@ function CheckoutPage() {
                     {getCurrencySymbol(order.currency)} {Number(order.subtotal).toLocaleString()}
                   </span>
                 </div>
+
+                {order.discount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>
+                      Discount
+                      {order.couponCode && (
+                        <span className="ml-1 text-xs text-gray-500">({order.couponCode})</span>
+                      )}
+                    </span>
+                    <span>- {getCurrencySymbol(order.currency)} {Number(order.discount).toLocaleString()}</span>
+                  </div>
+                )}
 
                 <div className="flex justify-between">
                   <span>Shipping</span>

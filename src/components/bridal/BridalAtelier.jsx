@@ -2,7 +2,7 @@
 
 function BridalAtelier() {
   const handleAppointment = () => {
-  const phone = "9207018422"; // Your WhatsApp number
+  const phone = "9037810000"; // Your WhatsApp number
   const message = encodeURIComponent(
     `
       Hello Zawara,

@@ -38,13 +38,15 @@ const Navbar = () => {
   location.pathname === "/bridal";
 
     const textColor =
-  isHeroPage && !scrolled
-    ? "text-white"
+  isHeroPage
+    ? scrolled
+      ? "text-white lg:text-black"
+      : "text-white"
     : "text-black";
     
 
   const mobileTextColor =
-  isHeroPage && !scrolled
+  isHeroPage
     ? "text-white"
     : "text-black";
 
@@ -53,8 +55,10 @@ const Navbar = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
-  isHeroPage && !scrolled
-    ? "bg-transparent"
+  isHeroPage
+    ? scrolled
+      ? "bg-transparent lg:bg-white"
+      : "bg-transparent"
     : "bg-white"
 }`}>
       <div className="max-w-[1800px] mx-auto px-4 md:px-6 lg:px-8 h-[50px] md:h-[60px] flex items-center justify-between relative">

@@ -1,91 +1,107 @@
 import { useState } from "react";
 import { FiCreditCard } from "react-icons/fi";
 import api from "../../api/api";
+import { useNavigate } from "react-router-dom";
 
-export default function PaymentForm({ onBack }) {
+export default function PaymentForm({ onBack, order, form }) {
+  const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [loading, setLoading] = useState(false);
+  const [statusMsg, setStatusMsg] = useState("");
+  const [statusType, setStatusType] = useState("");
 
-  
   const handlePayment = async () => {
     setLoading(true);
-  try {
-    // Create Razorpay Order
-    const { data } = await api.post("api/user/create-order/");
+    setStatusMsg("");
+    setStatusType("");
 
-    const options = {
-      key: data.key,
-      amount: data.amount,
-      currency: data.currency,
-      name: "Zawara",
-      description: "Order Payment",
-      order_id: data.order_id,
+    try {
+      const fullName = `${form?.first_name || ""} ${form?.last_name || ""}`.trim();
+      const shippingAddress = `${fullName}\n${form?.address_line_1 || ""}${
+        form?.address_line_2 ? ", " + form.address_line_2 : ""
+      }\n${form?.city || ""}, ${form?.state || ""} - ${form?.postal_code || ""}\n${form?.country || ""}`;
 
-      modal: {
-        ondismiss: function () {
-          setLoading(false);
+      // Pass email, phone, address and couponCode so backend creates order and Razorpay order correctly
+      const { data } = await api.post("api/user/create-order/", {
+        email: form?.email || "",
+        phone: form?.phone || "",
+        shipping_address: shippingAddress,
+        coupon_code: order?.couponCode || "",
+      });
+
+      if (!window.Razorpay) {
+        setLoading(false);
+        setStatusMsg("Payment gateway failed to load. Please refresh and try again.");
+        setStatusType("error");
+        return;
+      }
+
+      const options = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: "Zawara",
+        description: "Order Payment",
+        order_id: data.order_id,
+
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+            setStatusMsg("Payment was cancelled.");
+            setStatusType("error");
+          },
         },
-      },
 
-      handler: async function (response) {
-        
-        try {
-          const verify = await api.post(
-            "api/user/verify-payment/",
-            {
+        handler: async function (response) {
+          try {
+            const verify = await api.post("api/user/verify-payment/", {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-            }
-          );
+            });
 
-          if (verify.data.success) {
+            if (verify.data.success) {
+              setLoading(false);
+              setStatusMsg("Payment successful! Redirecting...");
+              setStatusType("success");
+              setTimeout(() => navigate("/"), 1500);
+            }
+          } catch (error) {
             setLoading(false);
-            alert("Payment Successful");
-            // navigate("/payment-success");
+            setStatusMsg("Payment verification failed. Please contact support.");
+            setStatusType("error");
+            console.error(error);
           }
-        } catch (error) {
-          setLoading(false);
-          console.log(error);
-          alert("Payment verification failed");
-        }
         },
 
-      prefill: {
-        name: "",
-        email: "",
-        contact: "",
-      },
+        prefill: {
+          name: "",
+          email: "",
+          contact: "",
+        },
 
-      theme: {
-        color: "#d8b98a",
-      },
-    };
+        theme: {
+          color: "#d8b98a",
+        },
+      };
 
-    if (!window.Razorpay) {
-      setLoading(false);
-      alert("Razorpay SDK failed to load.");
-      return;
-    }
+      const razorpay = new window.Razorpay(options);
 
-    const razorpay = new window.Razorpay(options);
-
-    razorpay.on("payment.failed", function (response) {
+      razorpay.on("payment.failed", function (response) {
         setLoading(false);
-        console.log(response.error);
-        alert("Payment Failed");
-    });
+        setStatusMsg("Payment failed. Please try again.");
+        setStatusType("error");
+        console.error(response.error);
+      });
 
-    razorpay.open();
-
-  } catch (error) {
-    setLoading(false);
-    console.log(error);
-  }
-};
-
-
-
+      razorpay.open();
+    } catch (error) {
+      setLoading(false);
+      setStatusMsg("Could not initiate payment. Please try again.");
+      setStatusType("error");
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -98,6 +114,19 @@ export default function PaymentForm({ onBack }) {
       </div>
 
       <hr className="mb-6 border-gray-200" />
+
+      {/* Status Banner */}
+      {statusMsg && (
+        <div
+          className={`mb-6 px-4 py-3 rounded-sm text-sm ${
+            statusType === "success"
+              ? "bg-green-50 text-green-700 border border-green-200"
+              : "bg-red-50 text-red-600 border border-red-200"
+          }`}
+        >
+          {statusMsg}
+        </div>
+      )}
 
       {/* Payment Methods */}
       <div className="space-y-4">

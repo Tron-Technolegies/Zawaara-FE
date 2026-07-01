@@ -9,82 +9,65 @@ const inputOk =
   "border-gray-200 focus:border-[#d8b98a] focus:ring-1 focus:ring-[#d8b98a]";
 
 function Field({ children }) {
+  
   return <div>{children}</div>;
 }
 
-export default function ShippingForm() {
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    address_line_1: "",
-    address_line_2: "",
-    city: "",
-    state: "",
-    country: "India",
-    postal_code: "",
-    is_default: true,
-  });
+export default function ShippingForm({onContinue,form,
+    setForm,}) {
+    // const [form, setForm] = useState({
+    //   first_name: "",
+    //   last_name: "",
+    //   email: "",
+    //   phone: "",
+    //   address_line_1: "",
+    //   address_line_2: "",
+    //   city: "",
+    //   state: "",
+    //   country: "India",
+    //   postal_code: "",
+    //   is_default: true,
+    // });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+  const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  setForm((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
+    setError("");
 
-    const full_name = `${formData.first_name} ${formData.last_name}`.trim();
+    const full_name = `${form.first_name} ${form.last_name}`.trim();
 
     try {
-      const token = localStorage.getItem("access");
-
-      const response = await api.post(
-        "api/user/address/add/",
-        {
-          full_name,
-          email: formData.email,
-          phone: formData.phone,
-          address_line_1: formData.address_line_1,
-          address_line_2: formData.address_line_2,
-          city: formData.city,
-          state: formData.state,
-          country: formData.country,
-          postal_code: formData.postal_code,
-          is_default: formData.is_default,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log(response.data);
-
-      alert("Address saved successfully.");
-
-      setFormData({
-        first_name: "",
-        last_name: "",
-        email: "",
-        phone: "",
-        address_line_1: "",
-        address_line_2: "",
-        city: "",
-        state: "",
-        country: "India",
-        postal_code: "",
-        is_default: true,
+      await api.post("api/user/address/add/", {
+        full_name,
+        email: form.email,
+        phone: form.phone,
+        address_line_1: form.address_line_1,
+        address_line_2: form.address_line_2,
+        city: form.city,
+        state: form.state,
+        country: form.country,
+        postal_code: form.postal_code,
+        is_default: form.is_default,
       });
-    } catch (error) {
-      console.log(error);
-      alert("Failed to save address.");
+
+      onContinue();
+    } catch (err) {
+      console.log(err);
+      setError(err.response?.data?.detail || "Failed to save address. Please check your details.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -106,7 +89,7 @@ export default function ShippingForm() {
         <input
           type="email"
           name="email"
-          value={formData.email}
+          value={form.email}
           onChange={handleChange}
           placeholder="Email Address *"
           className={`${inputBase} ${inputOk}`}
@@ -120,7 +103,7 @@ export default function ShippingForm() {
             <input
               type="text"
               name="first_name"
-              value={formData.first_name}
+              value={form.first_name}
               onChange={handleChange}
               placeholder="First Name *"
               className={`${inputBase} ${inputOk}`}
@@ -131,7 +114,7 @@ export default function ShippingForm() {
             <input
               type="text"
               name="last_name"
-              value={formData.last_name}
+              value={form.last_name}
               onChange={handleChange}
               placeholder="Last Name *"
               className={`${inputBase} ${inputOk}`}
@@ -144,7 +127,7 @@ export default function ShippingForm() {
           <input
             type="text"
             name="address_line_1"
-            value={formData.address_line_1}
+            value={form.address_line_1}
             onChange={handleChange}
             placeholder="Street Address *"
             className={`${inputBase} ${inputOk}`}
@@ -156,7 +139,7 @@ export default function ShippingForm() {
           <input
             type="text"
             name="address_line_2"
-            value={formData.address_line_2}
+            value={form.address_line_2}
             onChange={handleChange}
             placeholder="Apartment / Suite (Optional)"
             className={`${inputBase} ${inputOk}`}
@@ -169,7 +152,7 @@ export default function ShippingForm() {
             <input
               type="text"
               name="city"
-              value={formData.city}
+              value={form.city}
               onChange={handleChange}
               placeholder="City *"
               className={`${inputBase} ${inputOk}`}
@@ -180,7 +163,7 @@ export default function ShippingForm() {
             <input
               type="text"
               name="state"
-              value={formData.state}
+              value={form.state}
               onChange={handleChange}
               placeholder="State *"
               className={`${inputBase} ${inputOk}`}
@@ -193,7 +176,7 @@ export default function ShippingForm() {
           <Field>
             <select
               name="country"
-              value={formData.country}
+              value={form.country}
               onChange={handleChange}
               className={`${inputBase} ${inputOk}`}
             >
@@ -208,7 +191,7 @@ export default function ShippingForm() {
             <input
               type="text"
               name="postal_code"
-              value={formData.postal_code}
+              value={form.postal_code}
               onChange={handleChange}
               placeholder="Postal Code *"
               className={`${inputBase} ${inputOk}`}
@@ -221,29 +204,38 @@ export default function ShippingForm() {
           <input
             type="tel"
             name="phone"
-            value={formData.phone}
+            value={form.phone}
             onChange={handleChange}
             placeholder="Phone Number *"
             className={`${inputBase} ${inputOk}`}
           />
         </Field>
 
+        {/* Error Message */}
+        {error && (
+          <p className="text-red-500 text-sm text-center">{error}</p>
+        )}
+
         {/* Button */}
         <button
           type="submit"
+          disabled={saving}
           className="
             w-full
             bg-[#d8b98a]
             hover:bg-[#a77a33]
+            disabled:opacity-60
+            disabled:cursor-not-allowed
             text-black
             py-4
             uppercase
             tracking-[3px]
             text-xs
             transition
+            cursor-pointer
           "
         >
-          Continue to Review
+          {saving ? "Saving..." : "Continue to Review"}
         </button>
       </div>
     </form>

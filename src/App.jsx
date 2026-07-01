@@ -22,6 +22,8 @@ import "react-toastify/dist/ReactToastify.css";
 import CheckoutPage from "./pages/CheckOutPage";
 import FeaturedPage from "./pages/FeaturedPage";
 import ContactPage from "./pages/ContactPage";
+import OrderReview from "./components/checkout/OrderReview";
+import ChangePassword from "./pages/ChangePassword";
 
 
 const router = createBrowserRouter([
@@ -117,6 +119,14 @@ const router = createBrowserRouter([
       {
         path:"/contactus",
         element:<ContactPage/>
+      },
+      {
+        path:"/order-review",
+        element:<OrderReview/>
+      },
+      {
+        path:"/change-password",
+        element:<ChangePassword/>
       }
   
 

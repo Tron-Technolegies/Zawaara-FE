@@ -12,6 +12,7 @@ function ProductGrid({ searchQuery, selectedFilters }) {
 
   const queryParams = new URLSearchParams(location.search);
   const featured = queryParams.get("featured");
+  const sections = queryParams.get("sections");
 
   const fetchProducts = async (pageNumber) => {
     try {
@@ -63,6 +64,10 @@ function ProductGrid({ searchQuery, selectedFilters }) {
           params.append("featured", "true");
         }
 
+      if (sections) {
+          params.append("sections", sections);
+        }
+
       const url = `api/user/view_products/?${params.toString()}`;
       const response = await api.get(url);
 
@@ -93,7 +98,7 @@ function ProductGrid({ searchQuery, selectedFilters }) {
     setPage(1);
     setHasMore(true);
     fetchProducts(1);
-  }, [categoryId, searchQuery, selectedFilters,featured]);
+  }, [categoryId, searchQuery, selectedFilters,featured,sections]);
 
   const loadMore = () => {
     const nextPage = page + 1;

@@ -1,4 +1,5 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FiUser,
   FiPackage,
@@ -15,7 +16,14 @@ function MyAccountPage() {
   useEffect(()=>{
         window.scrollTo(0, 0)
       }, [])
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("account");
+
+  const handleLogout = () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    navigate("/login");
+  };
 
   const menuItems = [
     {
@@ -38,11 +46,11 @@ function MyAccountPage() {
       label: "Address Book",
       icon: <FiMapPin />,
     },
-    {
-      id: "payment",
-      label: "Payment Methods",
-      icon: <FiCreditCard />,
-    },
+    // {
+    //   id: "payment",
+    //   label: "Payment Methods",
+    //   icon: <FiCreditCard />,
+    // },
   ];
 
   return (
@@ -83,7 +91,10 @@ function MyAccountPage() {
               ))}
 
               <div className="border-t mt-4 pt-4">
-                <button className="flex items-center gap-3 px-4 py-4 uppercase text-[11px] tracking-[2px]">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 px-4 py-4 uppercase text-[11px] tracking-[2px] text-red-500 hover:text-red-700 transition cursor-pointer"
+                >
                   <FiLogOut />
                   Log Out
                 </button>
