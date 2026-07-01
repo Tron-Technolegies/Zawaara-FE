@@ -154,10 +154,10 @@ if (loading) {
             </button>
           </div>
 
-          <div className="grid lg:grid-cols-[55%_45%] gap-20">
+          <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-10 lg:gap-20">
 
             {/* LEFT SIDE */}
-            <div className="ml-[-99px]">
+            <div className="lg:ml-[-99px]">
 
               {/* Main Image */}
               <div className="bg-white overflow-hidden aspect-[3/4]">
