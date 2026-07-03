@@ -55,9 +55,9 @@ function Ceremonies() {
                   {item.title}
                 </h3>
 
-                <button className="mt-4 uppercase tracking-[3px] text-[10px] text-[#8a8a8a] hover:text-black transition">
+                {/* <button className="mt-4 uppercase tracking-[3px] text-[10px] text-[#8a8a8a] hover:text-black transition">
                   Discover
-                </button>
+                </button> */}
               </div>
             </div>
           ))}

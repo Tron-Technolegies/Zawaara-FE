@@ -1,98 +1,41 @@
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import api from "../../api/api"; // Adjust the path if needed
+import { Link } from "react-router-dom";
 
 function ProductNewArrival() {
     const sliderRef = useRef(null);
+    const [products, setProducts] = useState([]);
 
-  const products = [
-    {
-      id: 1,
-      name: "Black Tamannaah Kurta Set",
-      price: "₹16,000",
-      image: "/product/product_newarrival1.jpg",
-    },
-    {
-      id: 2,
-      name: "Black & Rust Mehroz Co-ord Set",
-      price: "₹21,900",
-      image: "/product/product_newarrival2.jpg",
-    },
-    {
-      id: 3,
-      name: "Mustard Kiaraa Co-ord Set",
-      price: "₹16,000",
-      image: "/product/product_newarrival3.jpg",
-    },
-    {
-      id: 4,
-      name: "Mustard Agaaz Co-ord Set",
-      price: "₹19,500",
-      image: "/product/product_newarrival4.jpg",
-    },
-    {
-      id: 5,
-      name: "Black Kiran Co-ord Set",
-      price: "₹11,500",
-      image: "/product/product_newarrival5.jpg",
-    },
-    {
-      id: 6,
-      name: "Emerald Silk Suit",
-      price: "₹24,000",
-      image: "/product/product_newarrival6.jpg",
-    },
-     {
-      id: 7,
-      name: "Black Tamannaah Kurta Set",
-      price: "₹16,000",
-      image: "/product/product_newarrival1.jpg",
-    },
-    {
-      id: 8,
-      name: "Black & Rust Mehroz Co-ord Set",
-      price: "₹21,900",
-      image: "/product/product_newarrival2.jpg",
-    },
-    {
-      id: 9,
-      name: "Mustard Kiaraa Co-ord Set",
-      price: "₹16,000",
-      image: "/product/product_newarrival3.jpg",
-    },
-    {
-      id: 10,
-      name: "Mustard Agaaz Co-ord Set",
-      price: "₹19,500",
-      image: "/product/product_newarrival4.jpg",
-    },
-    {
-      id:11,
-      name: "Black Kiran Co-ord Set",
-      price: "₹11,500",
-      image: "/product/product_newarrival5.jpg",
-    },
-    {
-      id: 12,
-      name: "Emerald Silk Suit",
-      price: "₹24,000",
-      image: "/product/product_newarrival6.jpg",
-    },
-  ];
+  
+    const scrollLeft = () => {
+      sliderRef.current?.scrollBy({
+        left: -400,
+        behavior: "smooth",
+      });
+    };
 
-  const scrollLeft = () => {
-    sliderRef.current?.scrollBy({
-      left: -400,
-      behavior: "smooth",
-    });
-  };
+    const scrollRight = () => {
+      sliderRef.current?.scrollBy({
+        left: 400,
+        behavior: "smooth",
+      });
+    };
 
-  const scrollRight = () => {
-    sliderRef.current?.scrollBy({
-      left: 400,
-      behavior: "smooth",
-    });
-  };
+
+      useEffect(() => {
+      fetchLatestProducts();
+    }, []);
+
+    const fetchLatestProducts = async () => {
+      try {
+        const response = await api.get("api/user/latest-products/?limit=10");
+        setProducts(response.data.products);
+      } catch (error) {
+        console.error("Error fetching latest products:", error);
+      }
+    };
 
   return (
     <section className="bg-[#f8f7f4] py-12 md:py-16">
@@ -128,15 +71,11 @@ function ProductNewArrival() {
             "
           >
             {products.map((product) => (
-              <div
+              <Link
+                to={`/product/${product.id}`}
                 key={product.id}
-                className="
-                  flex-shrink-0
-                  w-[180px]
-                  sm:w-[220px]
-                  md:w-[240px]
-                "
-              >
+                className="flex-shrink-0 w-[180px] sm:w-[220px] md:w-[240px]"
+>
                 <div className="overflow-hidden bg-white">
                   <img
                     src={product.image}
@@ -156,11 +95,11 @@ function ProductNewArrival() {
                     {product.name}
                   </h3>
 
-                  <p className="mt-1 text-[12px] text-[#555]">
-                    {product.price}
+                 <p className="mt-1 text-[12px] text-[#555]">
+                    ₹ {Number(product.price).toLocaleString("en-IN")}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 

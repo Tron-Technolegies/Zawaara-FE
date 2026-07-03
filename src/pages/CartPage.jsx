@@ -1,27 +1,32 @@
 import { useState,useEffect } from "react";
 import { FiX, FiShare2 } from "react-icons/fi";
 import api from "../api/api";
+import { useNavigate } from "react-router-dom";
+
 
 function CartPage() {
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [showCoupons, setShowCoupons] = useState(false);
+  const [coupons, setCoupons] = useState([]);
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
 
   useEffect(() => {
-  fetchCart();
-}, []);
+    fetchCart();
+  }, []);
 
   const fetchCart = async () => {
     try {
-      const response = await api.get(
-        "api/user/view_cart/"
-      );
+      const response = await api.get("api/user/view_cart/");
 
       setCartItems(response.data.items);
+      setSubtotal(response.data.subtotal);
+      setTotal(response.data.total);
 
     } catch (error) {
       console.error(error);
@@ -44,15 +49,85 @@ const removeItem = async (itemId) => {
       `api/user/remove_cart_item/${itemId}/`
     );
 
-    setCartItems(
-      cartItems.filter(
-        (item) => item.id !== itemId
-      )
-    );
+    fetchCart();
 
   } catch (error) {
     console.error(error);
   }
+};
+
+   
+ const updateQuantity = async (itemId,quantity)=>{
+  try{
+    await api.patch(`api/user/update_cart_quantity/${itemId}/`,
+      {
+        quantity
+      }
+    );
+
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              quantity,
+            }
+          : item
+      )
+    );
+
+    fetchCart();
+      }catch(error){
+        console.log(error);
+      }
+    };
+
+
+  const applyCoupon = async (code = couponCode) => {
+  try {
+    const response = await api.post(
+      "api/user/apply-coupon/",
+      {
+        code,
+        subtotal,
+      }
+    );
+
+    setDiscount(response.data.discount);
+    setTotal(response.data.total);
+
+  } catch (error) {
+    alert(error.response?.data?.error);
+  }
+};
+const fetchCoupons = async () => {
+
+    try{
+
+        const response = await api.get(
+            "api/user/available-coupons/"
+        );
+
+        setCoupons(response.data);
+
+        setShowCoupons(true);
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+const selectCoupon = (coupon) => {
+  setCouponCode(coupon.code);
+
+  setShowCoupons(false);
+
+  applyCoupon(coupon.code);
 };
 
   return (
@@ -81,60 +156,75 @@ const removeItem = async (itemId) => {
                   key={item.id}
                   className="bg-white border border-[#e5e5e5] p-5"
                 >
-                  <div className="flex flex-col md:flex-row gap-5">
+                  <div className="flex gap-4 md:gap-5">
 
                     {/* Image */}
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-full md:w-[140px] h-[190px] object-cover"
+                      className="w-[90px] sm:w-[120px] md:w-[140px] h-[120px] sm:h-[160px] md:h-[190px] shrink-0 object-cover"
                     />
 
                     {/* Content */}
-                    <div className="flex-1">
-                      <div className="flex justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start gap-2">
                         <div>
-                          <h3 className="text-xl font-serif">
-                            {item.brand}
-                          </h3>
-
-                          <p className="text-[#777] mt-1">
+                          <p className="text-[#777] mt-1 text-sm md:text-base">
                             {item.name}
                           </p>
                         </div>
 
-                        <button onClick={() => removeItem(item.id)}>
+                        <button onClick={() => removeItem(item.id)} className="cursor-pointer shrink-0">
                           <FiX />
                         </button>
                       </div>
 
-                      <div className="flex flex-wrap gap-4 mt-6">
+                      <div className="flex flex-wrap gap-2 sm:gap-4 mt-4 md:mt-6">
 
-                        <select className="border px-3 py-2">
+                        <select className="border px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm">
                           <option>Size: {item.size}</option>
                         </select>
 
-                        <div className="flex border">
-                          <button className="px-3 py-2">-</button>
-                          <span className="px-4 py-2 border-x">
+                        <div className="flex border text-xs sm:text-sm">
+                          <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.id,
+                                    item.quantity - 1
+                                  )
+                                }
+                                className="px-2 sm:px-3 py-1 sm:py-2"
+                                disabled={item.quantity === 1}
+                              >
+                                -
+                              </button>
+                          <span className="px-3 sm:px-4 py-1 sm:py-2 border-x">
                             {item.quantity}
                           </span>
-                          <button className="px-3 py-2">+</button>
+                          <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.id,
+                                    item.quantity + 1
+                                  )
+                                }
+                                className="px-2 sm:px-3 py-1 sm:py-2"
+                              >
+                                +
+                              </button>
                         </div>
 
                       </div>
 
-                      <div className="flex justify-between mt-12">
+                      <div className="flex justify-between mt-6 md:mt-12 text-xs sm:text-sm md:text-base">
                         <p>
                           Unit Price: ₹
-                          {item.price.toLocaleString()}
+                          {item.price}
                         </p>
 
                         <p className="font-medium">
                           Total Price: ₹
-                          {(
-                            item.price * item.quantity
-                          ).toLocaleString()}
+                          {(item.price * item.quantity).toLocaleString()}
                         </p>
                       </div>
                     </div>
@@ -149,78 +239,168 @@ const removeItem = async (itemId) => {
           {/* RIGHT SIDE */}
           <div className="space-y-5">
 
-            {/* Coupon */}
             <div className="bg-white border p-5">
-              <p className="uppercase text-[11px] tracking-[2px] mb-4">
-                Coupons
-              </p>
 
-              <div className="bg-[#edf7f1] p-4 flex justify-between items-center">
-                <div>
-                  <p className="font-medium">Apply Coupons</p>
-                  <p className="text-xs text-green-700">
-                    View all offers
-                  </p>
-                </div>
+            <p className="uppercase text-[11px] tracking-[2px] mb-4">
+              Coupons
+            </p>
 
-                <span>›</span>
-              </div>
-            </div>
+            <div className="bg-[#edf7f1] p-4">
 
-            {/* Offer */}
-            <div className="bg-white border p-4 flex justify-between">
-              <div>
-                <p className="font-medium">WELCOME10</p>
-                <p className="text-xs">
-                  Get Flat 10% Off On Your 1st Order
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                placeholder="Enter Coupon"
+                className="border w-full px-3 py-2 mb-3"
+              />
+              {couponCode && (
+                <p className="text-green-600 text-sm mt-2">
+                  Applied Coupon: {couponCode}
                 </p>
+              )}
+
+              <div className="flex justify-between items-center">
+
+                <button
+                  onClick={applyCoupon}
+                  disabled={!couponCode.trim()}
+                  className="bg-black text-white px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Apply
+                </button>
+
+                <button
+                  onClick={fetchCoupons}
+                  className="text-green-700 text-sm"
+                >
+                  View all offers
+                </button>
+
               </div>
 
-              <button>📋</button>
             </div>
 
-            {/* Summary */}
-            <div className="bg-white border p-5 sticky top-28">
-              <h3 className="uppercase text-[11px] tracking-[2px] mb-6">
-                Price Summary ({cartItems.length} Item)
-              </h3>
+          </div>
 
-              <div className="space-y-4 text-sm">
+            {/* Coupon */}
+            {
+            showCoupons && (
+
+                    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+
+                    <div className="bg-white w-[450px] rounded-lg p-6">
+
+                    <h2 className="text-xl font-bold mb-4">
+                    Available Coupons
+                    </h2>
+
+                    {
+                    coupons.map((coupon)=>(
+
+                    <div
+                    key={coupon.id}
+                    className="border rounded p-4 mb-3"
+                    >
+
+                    <h3 className="font-semibold">
+                    {coupon.code}
+                    </h3>
+
+                    <p className="text-sm">
+                    {coupon.description}
+                    </p>
+
+                    <button
+                    onClick={()=>selectCoupon(coupon)}
+                    className="bg-black text-white px-4 py-2 mt-3"
+                    >
+                    Apply
+                    </button>
+
+                    </div>
+
+                    ))
+                    }
+
+                    <button
+                    onClick={()=>setShowCoupons(false)}
+                    className="mt-3"
+                    >
+                    Close
+                    </button>
+
+                    </div>
+
+                    </div>
+
+                    )
+                    }
+
+            {/* Sticky Container for Summary & Share Cart */}
+            <div className="lg:sticky lg:top-28 space-y-5">
+              {/* Summary */}
+              <div className="bg-white border p-5">
+                <h3 className="uppercase text-[11px] tracking-[2px] mb-6">
+                  Price Summary ({cartItems.length} Item)
+                </h3>
+
                 <div className="flex justify-between">
-                  <span>Total MRP</span>
-                  <span>₹{subtotal.toLocaleString()}</span>
+                    <span>Subtotal</span>
+
+                    <span>
+                        ₹{subtotal}
+                    </span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>₹{subtotal.toLocaleString()}</span>
+                    <span>Discount</span>
+
+                    <span className="text-green-600">
+                        -₹{discount}
+                    </span>
                 </div>
+
+                <hr/>
+
+                <div className="flex justify-between text-xl">
+                    <span>Total</span>
+
+                    <span>
+                        ₹{total}
+                    </span>
+                </div>
+                <button
+                  onClick={() =>
+                    navigate("/checkout", {
+                      state: {
+                        items: cartItems,
+                        subtotal,
+                        discount,
+                        couponCode,
+                        total,
+                      },
+                    })
+                  }
+                  className="w-full bg-[#4a4a4a] text-white py-4 mt-6 uppercase tracking-[3px] text-[11px] cursor-pointer"
+                >
+                  Checkout
+                </button>
               </div>
 
-              <hr className="my-6" />
+              {/* Share Cart */}
+              {/* <div className="bg-white border p-4 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <FiShare2 />
+                  <span className="uppercase text-[11px] tracking-[2px]">
+                    Share Shopping Cart
+                  </span>
+                </div>
 
-              <div className="flex justify-between text-xl font-serif">
-                <span>Total</span>
-                <span>₹{subtotal.toLocaleString()}</span>
-              </div>
-
-              <button className="w-full bg-[#4a4a4a] text-white py-4 mt-6 uppercase tracking-[3px] text-[11px]">
-                Checkout
-              </button>
-            </div>
-
-            {/* Share Cart */}
-            <div className="bg-white border p-4 flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <FiShare2 />
-                <span className="uppercase text-[11px] tracking-[2px]">
-                  Share Shopping Cart
-                </span>
-              </div>
-
-              <button className="uppercase text-[11px] tracking-[2px]">
-                Share
-              </button>
+                <button className="uppercase text-[11px] tracking-[2px]">
+                  Share
+                </button>
+              </div> */}
             </div>
 
           </div>

@@ -33,7 +33,8 @@ const HomeCollection = () => {
         <h2 className="text-center text-[#2f2a26] text-2xl md:text-4xl font-serif tracking-[2px] mb-12">
           SHOP BY CATEGORY
         </h2>
-
+      
+      <Link to="/new-arrivals">
         <div className="grid grid-cols-3 md:grid-cols-6 gap-6 md:gap-10 place-items-center">
           {categories.map((item) => (
             <div
@@ -54,6 +55,7 @@ const HomeCollection = () => {
             </div>
           ))}
         </div>
+        </Link>
       </div>
 
       {/* Collection Banner */}

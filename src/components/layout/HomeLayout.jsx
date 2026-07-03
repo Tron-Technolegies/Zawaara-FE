@@ -12,7 +12,7 @@ function HomeLayout() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
-      <main className={`flex-1 ${isHeroPage ? "pt-0" : "pt-[100px]"}`}>
+      <main className={`flex-1 ${isHeroPage ? "pt-0" : "pt-[70px] md:pt-[80px]"}`}>
         <Outlet />
       </main>
 

@@ -1,4 +1,4 @@
-import MoreLike from "../components/product/MoreLike"
+// import MoreLike from "../components/product/MoreLike"
 import Product from "../components/product/Product"
 import ProductNewArrival from "../components/product/ProductNewArrival"
 import { useEffect } from "react"
@@ -12,7 +12,7 @@ function ProductPage() {
     <>
     <Product/>
     <ProductNewArrival/>
-    <MoreLike/>
+    {/* <MoreLike/> */}
     </>
   )
 }

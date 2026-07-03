@@ -1,4 +1,4 @@
-
+import { Link } from "react-router-dom"
 function BridalHero() {
   return (
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
@@ -34,9 +34,11 @@ function BridalHero() {
           </p>
 
           {/* Button */}
+          <Link to="/new-arrivals">
           <button className="bg-white text-[#222] uppercase tracking-[2px] md:tracking-[4px] text-[9px] md:text-xs px-6 sm:px-10 md:px-16 py-3 md:py-5 hover:bg-[#f4f4f4] transition duration-300">
             Explore The Collection
           </button>
+          </Link>
 
         </div>
       </div>

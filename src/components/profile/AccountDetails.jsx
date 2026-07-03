@@ -1,8 +1,14 @@
 
 import { useState, useEffect } from "react";
 import api from "../../api/api";
+import { useNavigate } from "react-router-dom";
+
+
+
+
 
 function AccountDetails() {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({
     first_name: "",
     last_name: "",
@@ -11,25 +17,23 @@ function AccountDetails() {
   });
 
   const fetchUserDetails = async () => {
-  try {
-    const token = localStorage.getItem("access");
-    console.log("Fetching user details...");
+    try {
+      const token = localStorage.getItem("access");
 
-    const response = await api.get(
-      "api/user/user_details/",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      const response = await api.get(
+        "api/user/user_details/",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    setUserData(response.data);
-  } catch (error) {
-    console.log(error);
-  }
-  
-};
+      setUserData(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 useEffect(() => {
   fetchUserDetails();
@@ -67,6 +71,10 @@ const handleSubmit = async (e) => {
     [e.target.name]: e.target.value,
   });
 };
+
+
+
+
   return (
     <div className="bg-white border border-[#e5e5e5] p-6 md:p-8">
       <form className="space-y-6" onSubmit={handleSubmit}>
@@ -186,6 +194,7 @@ const handleSubmit = async (e) => {
 
           <button
             type="button"
+            onClick={() => navigate("/change-password")}
             className="border border-[#ddd] px-10 py-4 uppercase tracking-[2px] text-[11px]"
           >
             Change Password

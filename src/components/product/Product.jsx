@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import api from "../../api/api";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
+
   import {
     FiHeart,
     FiShare2,
@@ -13,37 +17,68 @@ import api from "../../api/api";
 
   
   function Product() {
-      const [product, setProduct] = useState(null);
-      const [images, setImages] = useState([]);
-      const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const [product, setProduct] = useState(null);
+    const [images, setImages] = useState([]);
+    const [loading, setLoading] = useState(true);
 
 
     const {id} = useParams();
     console.log(id)
     const [selectedImage, setSelectedImage] = useState("");
-    const [selectedSize, setSelectedSize] = useState("XS");
-
-    const sizes =
-        product?.sizes?.map(
-          (item) => item.size
-        ) || [];
+    const [selectedSize, setSelectedSize] = useState("");
+    const [selectedQuantity, setSelectedQuantity] = useState(1);
 
     const handleAddToCart = async () => {
-        try {
-          await api.post(
-            "api/user/add_to_cart/",
-            {
-              product_id: product.id,
-              size: selectedSize,
-              quantity: 1,
-            }
-          );
+      try {
+        await api.post("api/user/add_to_cart/", {
+          product_id: product.id,
+          size: selectedSize,
+          quantity: selectedQuantity,
+        });
 
-          alert("Added to cart");
-        } catch (error) {
-          console.log(error);
+        toast.success("Product added to cart");
+
+      } catch (error) {
+
+        if (error.response?.status === 401) {
+          toast.error("Please login to add items to your cart.");
+
+          setTimeout(() => {
+            navigate("/login");
+          }, 1500);
+
+          return;
         }
-      };
+
+        toast.error(error.response?.data?.error || "Something went wrong");
+      }
+    };
+
+
+    const handleAddToWishlist = async () => {
+      try {
+        await api.post("api/user/add_to_wishlist/", {
+          product_id: product.id,
+        });
+
+        toast.success("Added to wishlist");
+
+      } catch (error) {
+
+        if (error.response?.status === 401) {
+          toast.error("Please login first");
+
+          setTimeout(() => {
+            navigate("/login");
+          }, 1500);
+
+          return;
+        }
+
+        toast.error(error.response?.data?.error || "Something went wrong");
+      }
+    };
 
   useEffect(()=>{
   const fetchProduct = async () => {
@@ -55,6 +90,7 @@ import api from "../../api/api";
     const data = response.data;
 
     setProduct(data);
+    setSelectedSize(data.size || "");
 
     const productImages = [];
 
@@ -92,29 +128,44 @@ if (loading) {
 }
 
     return (
-      <section className="bg-[#f8f7f4] min-h-screen">
-        <div className="max-w-[1600px] mx-auto px-4 lg:px-6 py-6">
+      <section className="bg-[#f8f7f4]   min-h-screen">
+        <div className="max-w-[1300px] mx-auto px-4 lg:px-6 py-6">
 
-          {/* Breadcrumb */}
-          <div className="text-[11px] uppercase tracking-[2px] text-[#777] mb-6">
-            Home / Apparel / Dress / Long Dresses /
-            <span className="text-[#333]">
-              {" "}{product?.name}
-            </span>
+          {/* Back Button Container */}
+          <div className="mb-6">
+            <button
+              onClick={() => navigate("/new-arrivals")}
+              className="flex items-center gap-2 text-[11px] uppercase tracking-[2px] text-[#555] hover:text-black transition cursor-pointer"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              <span>Back</span>
+            </button>
           </div>
 
-          <div className="grid lg:grid-cols-[55%_45%] gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-10 lg:gap-20">
 
             {/* LEFT SIDE */}
-            <div>
+            <div className="lg:ml-[-99px]">
 
               {/* Main Image */}
-              <div className="bg-white overflow-hidden">
+              <div className="bg-white overflow-hidden aspect-[3/4]">
                 <img
                   src={selectedImage || "/placeholder.png"}
                   // src="/product/product_image1.png"
                   alt="Product"
-                  className="w-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
               </div>
 
@@ -154,29 +205,24 @@ if (loading) {
 
               {/* Size */}
               <div className="mt-10">
-                <div className="flex gap-6 text-[11px] uppercase tracking-[2px]">
-                  <span>Select Size</span>
-                  <button className="underline">
+                <div className="flex gap-6 text-[11px] uppercase tracking-[2px] items-center">
+                  <label htmlFor="size-select">Select Size</label>
+                  <Link to="/sizeguide" className="underline hover:text-[#a77a33] transition">
                     Size Chart
-                  </button>
+                  </Link>
                 </div>
 
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`w-12 h-12 border text-sm
-                      ${
-                        selectedSize === size
-                          ? "bg-black text-white border-black"
-                          : "border-[#ddd]"
-                      }`}
-                    >
-                      {size}
-                    </button>
+                <select
+                  id="size-select"
+                  value={selectedSize}
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                  className="mt-4 border border-[#ddd] px-3 py-2 bg-white text-sm cursor-pointer outline-none focus:border-[#d8b98a] transition min-w-[80px]"
+                >
+                  <option value="" disabled>-- Select a size --</option>
+                  {["S", "M", "L", "XL"].map((size) => (
+                    <option key={size} value={size}>{size}</option>
                   ))}
-                </div>
+                </select>
               </div>
 
               {/* Quantity */}
@@ -185,10 +231,14 @@ if (loading) {
                   Quantity
                 </label>
 
-                <select className="border border-[#ddd] px-4 py-2 bg-white">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
+                <select
+                  value={selectedQuantity}
+                  onChange={(e) => setSelectedQuantity(Number(e.target.value))}
+                  className="border border-[#ddd] px-4 py-2 bg-white cursor-pointer"
+                >
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
                 </select>
               </div>
 
@@ -196,17 +246,19 @@ if (loading) {
               <div className="flex items-center gap-4 mt-8">
                 <button
                  onClick={handleAddToCart}
-                 className="bg-[#d8b98a] hover:bg-[#c9a872] transition px-10 py-4 uppercase tracking-[2px] text-[11px]">
+                 className="bg-[#d8b98a] hover:bg-[#a77a33] cursor-pointer transition px-10 py-4 uppercase tracking-[2px] text-[11px]">
                   Add To Bag
                 </button>
 
-                <button className="text-xl">
+                <button 
+                  onClick={handleAddToWishlist}
+                  className="text-xl cursor-pointer">
                   <FiHeart />
                 </button>
 
-                <button className="text-xl">
+                {/* <button className="text-xl">
                   <FiShare2 />
-                </button>
+                </button> */}
               </div>
 
               <p className="text-xs text-[#777] mt-3">
@@ -284,8 +336,19 @@ if (loading) {
                     Shipping
                   </summary>
 
-                  <div className="pb-5 text-sm text-[#666]">
-                    Free shipping on all prepaid orders.
+                  <div className="pb-5 text-sm text-[#666] space-y-3">
+                    <p>
+                      We provide shipping and delivery of our Products all across India and most of the countries across the world. Ready products will be dispatched within 24 hours.
+                    </p>
+                    <p>
+                      For our customers in Kerala, delivery will be within 5-10 working days. Shipping time depends on the delivery address you provide.
+                    </p>
+                    <p>
+                      For any alteration / customisation you can communicate with our designer: <strong>9047810000</strong>.
+                    </p>
+                    <p>
+                      Our team will get in touch with you as soon as the order is placed. All India shipping is available.
+                    </p>
                   </div>
                 </details>
 

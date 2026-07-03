@@ -1,67 +1,8 @@
-import { useState } from "react";
+import { useState,useEffect  } from "react";
+import api from "../../api/api";
 function OrdersReturns() {
-    const orders = [
-    {
-      id: 1,
-      orderNumber: "#RK-984532",
-      orderDate: "Oct 24, 2023",
-      totalAmount: "₹ 36,950",
-      products: [
-        {
-          image: "/orders/order-1.jpg",
-          name: "Midnight Silk Kurta Set",
-          size: "M",
-          qty: 1,
-          price: "₹ 12,950",
-          status: "IN TRANSIT - ARRIVING OCT 28",
-          color: "bg-blue-500",
-        },
-        {
-          image: "/orders/order-2.jpg",
-          name: "Emerald Velvet Suit",
-          size: "S",
-          qty: 1,
-          price: "₹ 24,000",
-          status: "IN TRANSIT - ARRIVING OCT 28",
-          color: "bg-blue-500",
-        },
-      ],
-    },
-    {
-      id: 2,
-      orderNumber: "#RK-971104",
-      orderDate: "Sep 12, 2023",
-      totalAmount: "₹ 14,400",
-      products: [
-        {
-          image: "/orders/order-3.jpg",
-          name: "Rose Zari Tunic",
-          size: "M",
-          qty: 1,
-          price: "₹ 14,400",
-          status: "DELIVERED",
-          color: "bg-green-500",
-        },
-      ],
-    },
-    {
-      id: 3,
-      orderNumber: "#RK-958221",
-      orderDate: "Aug 05, 2023",
-      totalAmount: "₹ 18,000",
-      products: [
-        {
-          image: "/orders/order-4.jpg",
-          name: "Oasis Printed Maxi",
-          size: "L",
-          qty: 1,
-          price: "₹ 18,000",
-          status: "RETURNED & REFUNDED",
-          color: "bg-gray-400",
-        },
-      ],
-    },
-  ];
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -73,6 +14,47 @@ function OrdersReturns() {
   const currentOrders = orders.slice(firstIndex, lastIndex);
 
   const totalPages = Math.ceil(orders.length / ordersPerPage);
+
+
+  const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem("access");
+
+        const response = await api.get(
+          "api/user/orders/",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setOrders(response.data.orders);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    useEffect(() => {
+      fetchOrders();
+    }, []);
+
+    if (loading) {
+  return (
+    <div className="text-center py-20">
+      Loading...
+    </div>
+  );
+}
+
+if (!loading && orders.length === 0) {
+  return (
+    <div className="text-center py-20 text-gray-500">
+      No orders found.
+    </div>
+  );
+}
 
   return (
     <div className="w-full">
@@ -165,6 +147,7 @@ function OrdersReturns() {
       ))}
 
       {/* Pagination */}
+      {totalPages > 1 && (
       <div className="flex justify-center items-center gap-4 mt-10">
         <button
           disabled={currentPage === 1}
@@ -196,6 +179,7 @@ function OrdersReturns() {
           ›
         </button>
       </div>
+      )}
     </div>
   )
 }

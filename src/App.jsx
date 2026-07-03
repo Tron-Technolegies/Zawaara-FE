@@ -17,6 +17,13 @@ import ShippingAndReturns from "./pages/ShippingAndReturns";
 import FAQ from "./pages/FAQ";
 import SizeGuide from "./pages/SizeGuide";
 import ResetPassword from "./components/login/ResetPassword";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CheckoutPage from "./pages/CheckOutPage";
+import FeaturedPage from "./pages/FeaturedPage";
+import ContactPage from "./pages/ContactPage";
+import OrderReview from "./components/checkout/OrderReview";
+import ChangePassword from "./pages/ChangePassword";
 
 
 const router = createBrowserRouter([
@@ -100,6 +107,26 @@ const router = createBrowserRouter([
       {
         path:"/resetpassword/:uid/:token",
         element:<ResetPassword/>
+      },
+      {
+        path:"/checkout",
+        element:<CheckoutPage/>
+      },
+      {
+        path:"/featured",
+        element:<FeaturedPage/>
+      },
+      {
+        path:"/contactus",
+        element:<ContactPage/>
+      },
+      {
+        path:"/order-review",
+        element:<OrderReview/>
+      },
+      {
+        path:"/change-password",
+        element:<ChangePassword/>
       }
   
 
@@ -108,7 +135,23 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
+    </>
+  );
+  
 }
 
 export default App;

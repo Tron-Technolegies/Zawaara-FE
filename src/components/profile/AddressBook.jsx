@@ -1,29 +1,38 @@
 import { FiPlus } from "react-icons/fi";
-import { useState } from "react";
+import { useState,useEffect  } from "react";
+import api from "../../api/api";
 import AddAddressModal from "./AddAddressModal";
+
 
 function AddressBook() {
     const [showModal, setShowModal] = useState(false);  
-    const addresses = [
-    {
-      id: 1,
-      name: "Aanya Sharma",
-      address:
-        "142, Palm Grove Villas, Phase 2, Bandra West",
-      city: "Mumbai, Maharashtra 400050",
-      phone: "+91 98765 43210",
-      default: true,
-    },
-    {
-      id: 2,
-      name: "Rohan Sharma",
-      address:
-        "Tech Park Tower B, 4th Floor, Electronic City Phase 1",
-      city: "Bengaluru, Karnataka 560100",
-      phone: "+91 91234 56780",
-      default: false,
-    },
-  ];
+    const [addresses, setAddresses] = useState([]);
+
+
+    const fetchAddresses = async () => {
+        try {
+          const token = localStorage.getItem("access");
+
+          const response = await api.get(
+            "api/user/address/",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          setAddresses(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+        useEffect(() => {
+          fetchAddresses();
+        }, []);
+
+
+
   return (
     <div className="w-full">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -36,10 +45,10 @@ function AddressBook() {
           >
             <div className="flex items-start justify-between">
               <h3 className="text-[28px] font-serif text-[#222]">
-                {address.name}
+                {address.full_name}
               </h3>
 
-              {address.default && (
+              {address.is_default && (
                 <span className="border border-[#d9d9d9] px-2 py-1 text-[9px] uppercase tracking-[1px]">
                   Default
                 </span>
@@ -47,23 +56,31 @@ function AddressBook() {
             </div>
 
             <div className="mt-5 text-[#777] text-sm leading-7">
-              <p>{address.address}</p>
-              <p>{address.city}</p>
+              <p>{address.address_line_1}</p>
+
+              {address.address_line_2 && (
+                <p>{address.address_line_2}</p>
+              )}
+
+              <p>
+                {address.city}, {address.state} {address.postal_code}
+              </p>
+
+              <p>{address.country}</p>
 
               <p className="mt-3">
-                <span className="text-[#444]">T:</span>{" "}
-                {address.phone}
+                <span className="text-[#444]">T:</span> {address.phone}
               </p>
             </div>
 
             <hr className="my-5" />
 
             <div className="flex gap-6">
-              <button className="uppercase text-[10px] tracking-[2px] text-[#333] hover:text-black">
+              <button className="uppercase text-[10px] tracking-[2px]">
                 Edit
               </button>
 
-              <button className="uppercase text-[10px] tracking-[2px] text-red-500 hover:text-red-600">
+              <button className="uppercase text-[10px] tracking-[2px] text-red-500">
                 Delete
               </button>
             </div>
@@ -102,8 +119,9 @@ function AddressBook() {
 
       </div>
        <AddAddressModal
-          open={showModal}
-          onClose={() => setShowModal(false)}
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={fetchAddresses}
         />
     </div>
   )

@@ -30,31 +30,17 @@ const ShopByCategories = () => {
 
         {/* Top Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-16">
-          {categories.map((item) => (
-            <div key={item.id} className="h-[500px] md:h-[700px]">
-              <ShopByCategoriesCard
-                id={item.id}
-                image={item.image}
-                title={item.name}
-                buttonText="SHOP NOW"
-              />
-              
-            </div>
-          ))}
+  {categories.map((item) => (
+    <div key={item.id} className="h-[500px] md:h-[700px]">
+          <ShopByCategoriesCard
+            id={item.id}
+            image={item.image}
+            title={item.name}
+            buttonText="SHOP NOW"
+          />
         </div>
-
-        {/* Bottom Row */}
-        <div className="   grid grid-cols-1 md:grid-cols-3 gap-2 mb-16">
-          {categories.slice(3, 6).map((item) => (
-            <div key={item.title} className=" h-[500px] md:h-[700px]">
-              <ShopByCategoriesCard
-                image={item.image}
-                title={item.title}
-                buttonText="SHOP NOW"
-              />
-            </div>
-          ))}
-        </div>
+      ))}
+    </div>
       </div>
     </section>
   );
