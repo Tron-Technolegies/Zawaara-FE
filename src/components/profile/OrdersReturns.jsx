@@ -1,60 +1,60 @@
-import { useState,useEffect  } from "react";
+import { useState, useEffect } from "react";
 import api from "../../api/api";
+
 function OrdersReturns() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
-
   const ordersPerPage = 1;
 
   const lastIndex = currentPage * ordersPerPage;
   const firstIndex = lastIndex - ordersPerPage;
-
   const currentOrders = orders.slice(firstIndex, lastIndex);
-
   const totalPages = Math.ceil(orders.length / ordersPerPage);
 
-
   const fetchOrders = async () => {
-      try {
-        const token = localStorage.getItem("access");
+    try {
+      const token = localStorage.getItem("access");
 
-        const response = await api.get(
-          "api/user/orders/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+      const response = await api.get("api/user/orders/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        setOrders(response.data.orders);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    useEffect(() => {
-      fetchOrders();
-    }, []);
+      console.log("Orders API response:", response.data);
 
-    if (loading) {
-  return (
-    <div className="text-center py-20">
-      Loading...
-    </div>
-  );
-}
+      setOrders(response.data.orders || []);
+    } catch (error) {
+      console.log("Orders fetch error:", error);
+      setError("Failed to load orders");
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-if (!loading && orders.length === 0) {
-  return (
-    <div className="text-center py-20 text-gray-500">
-      No orders found.
-    </div>
-  );
-}
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center py-20">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-20 text-red-500">{error}</div>;
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div className="text-center py-20 text-gray-500">
+        No orders found.
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -94,14 +94,14 @@ if (!loading && orders.length === 0) {
           </div>
 
           {/* Products */}
-          {order.products.map((product, index) => (
+          {(order.products || []).map((product, index) => (
             <div
               key={index}
               className="flex flex-col md:flex-row justify-between gap-4 p-4 md:p-6 border-b"
             >
               <div className="flex gap-4">
                 <img
-                  src={product.image}
+                  src={product.image || "/placeholder.png"}
                   alt={product.name}
                   className="w-20 h-24 object-cover"
                 />
@@ -112,12 +112,12 @@ if (!loading && orders.length === 0) {
                   </h3>
 
                   <p className="text-sm text-gray-500 mt-1">
-                    Size: {product.size} | Qty: {product.qty}
+                    Size: {product.size || "-"} | Qty: {product.qty}
                   </p>
 
                   <div className="flex items-center gap-2 mt-4">
                     <span
-                      className={`w-2 h-2 rounded-full ${product.color}`}
+                      className={`w-2 h-2 rounded-full ${product.color || "bg-black"}`}
                     />
 
                     <p className="text-[11px] uppercase tracking-[2px]">
@@ -148,40 +148,39 @@ if (!loading && orders.length === 0) {
 
       {/* Pagination */}
       {totalPages > 1 && (
-      <div className="flex justify-center items-center gap-4 mt-10">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((p) => p - 1)}
-          className="text-lg disabled:opacity-30"
-        >
-          ‹
-        </button>
-
-        {Array.from({ length: totalPages }).map((_, index) => (
+        <div className="flex justify-center items-center gap-4 mt-10">
           <button
-            key={index}
-            onClick={() => setCurrentPage(index + 1)}
-            className={`w-8 h-8 text-sm border ${
-              currentPage === index + 1
-                ? "bg-black text-white"
-                : "bg-white"
-            }`}
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => p - 1)}
+            className="text-lg disabled:opacity-30"
           >
-            {index + 1}
+            ‹
           </button>
-        ))}
 
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((p) => p + 1)}
-          className="text-lg disabled:opacity-30"
-        >
-          ›
-        </button>
-      </div>
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index + 1)}
+              className={`w-8 h-8 text-sm border ${currentPage === index + 1
+                  ? "bg-black text-white"
+                  : "bg-white"
+                }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => p + 1)}
+            className="text-lg disabled:opacity-30"
+          >
+            ›
+          </button>
+        </div>
       )}
     </div>
-  )
+  );
 }
 
-export default OrdersReturns
+export default OrdersReturns;
