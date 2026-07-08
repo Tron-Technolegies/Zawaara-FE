@@ -1,43 +1,88 @@
 import { FiPlus } from "react-icons/fi";
-import { useState,useEffect  } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import api from "../../api/api";
 import AddAddressModal from "./AddAddressModal";
 
-
 function AddressBook() {
-    const [showModal, setShowModal] = useState(false);  
-    const [addresses, setAddresses] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
 
+  const fetchAddresses = async () => {
+    try {
+      const token = localStorage.getItem("access");
 
-    const fetchAddresses = async () => {
-        try {
-          const token = localStorage.getItem("access");
+      const response = await api.get("api/user/address/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-          const response = await api.get(
-            "api/user/address/",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+      setAddresses(response.data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load addresses");
+    }
+  };
 
-          setAddresses(response.data);
-        } catch (error) {
-          console.log(error);
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("access");
+
+      await api.delete(`api/user/address/delete/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setAddresses((prev) => prev.filter((address) => address.id !== id));
+      toast.success("Address deleted successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete address");
+    }
+  };
+
+  const handleEdit = (address) => {
+    setSelectedAddress(address);
+    setShowModal(true);
+  };
+
+  const handleAddNew = () => {
+    setSelectedAddress(null);
+    setShowModal(true);
+  };
+
+  const handleSetDefault = async (id) => {
+    try {
+      const token = localStorage.getItem("access");
+
+      await api.put(
+        `api/user/address/update/${id}/`,
+        { is_default: true },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      };
-        useEffect(() => {
-          fetchAddresses();
-        }, []);
+      );
 
-
+      fetchAddresses();
+      toast.success("Default address updated");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to set default address");
+    }
+  };
 
   return (
     <div className="w-full">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        
-        {/* Existing Addresses */}
         {addresses.map((address) => (
           <div
             key={address.id}
@@ -48,19 +93,23 @@ function AddressBook() {
                 {address.full_name}
               </h3>
 
-              {address.is_default && (
+              {address.is_default ? (
                 <span className="border border-[#d9d9d9] px-2 py-1 text-[9px] uppercase tracking-[1px]">
                   Default
                 </span>
+              ) : (
+                <button
+                  onClick={() => handleSetDefault(address.id)}
+                  className="text-[9px] uppercase tracking-[1px] border border-[#d9d9d9] px-2 py-1 hover:bg-gray-50"
+                >
+                  Set Default
+                </button>
               )}
             </div>
 
             <div className="mt-5 text-[#777] text-sm leading-7">
               <p>{address.address_line_1}</p>
-
-              {address.address_line_2 && (
-                <p>{address.address_line_2}</p>
-              )}
+              {address.address_line_2 && <p>{address.address_line_2}</p>}
 
               <p>
                 {address.city}, {address.state} {address.postal_code}
@@ -76,20 +125,25 @@ function AddressBook() {
             <hr className="my-5" />
 
             <div className="flex gap-6">
-              <button className="uppercase text-[10px] tracking-[2px]">
+              <button
+                onClick={() => handleEdit(address)}
+                className="uppercase text-[10px] tracking-[2px]"
+              >
                 Edit
               </button>
 
-              <button className="uppercase text-[10px] tracking-[2px] text-red-500">
+              <button
+                onClick={() => handleDelete(address.id)}
+                className="uppercase text-[10px] tracking-[2px] text-red-500"
+              >
                 Delete
               </button>
             </div>
           </div>
         ))}
 
-        {/* Add Address Card */}
         <button
-        onClick={() => setShowModal(true)}
+          onClick={handleAddNew}
           className="
             border border-dashed border-[#d8d8d8]
             bg-white
@@ -114,17 +168,19 @@ function AddressBook() {
             Add another address for faster checkout.
           </p>
         </button>
-      
-       
-
       </div>
-       <AddAddressModal
+
+      <AddAddressModal
         open={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={() => {
+          setShowModal(false);
+          setSelectedAddress(null);
+        }}
         onSuccess={fetchAddresses}
-        />
+        editData={selectedAddress}
+      />
     </div>
-  )
+  );
 }
 
-export default AddressBook
+export default AddressBook;

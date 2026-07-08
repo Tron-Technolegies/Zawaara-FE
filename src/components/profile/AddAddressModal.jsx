@@ -10,84 +10,95 @@ import {
   IconButton,
 } from "@mui/material";
 import { FiX } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import api from "../../api/api";
 
-function AddAddressModal({ open, onClose, onSuccess }) {
-
+function AddAddressModal({ open, onClose, onSuccess, editData }) {
   const states = [
-      "Kerala",
-      "Tamil Nadu",
-      "Karnataka",
-      "Maharashtra",
-      "Delhi",
-    ];
-  const [formData, setFormData] = useState({
-        full_name: "",
-        email: "",
-        phone: "",
-        address_line_1: "",
-        address_line_2: "",
-        city: "",
-        state: "",
-        postal_code: "",
-        country: "India",
-        is_default: false,
+    "Kerala",
+    "Tamil Nadu",
+    "Karnataka",
+    "Maharashtra",
+    "Delhi",
+  ];
+
+  const initialForm = {
+    full_name: "",
+    email: "",
+    phone: "",
+    address_line_1: "",
+    address_line_2: "",
+    city: "",
+    state: "",
+    postal_code: "",
+    country: "India",
+    is_default: false,
+  };
+
+  const [formData, setFormData] = useState(initialForm);
+
+  useEffect(() => {
+    if (editData) {
+      setFormData({
+        full_name: editData.full_name || "",
+        email: editData.email || "",
+        phone: editData.phone || "",
+        address_line_1: editData.address_line_1 || "",
+        address_line_2: editData.address_line_2 || "",
+        city: editData.city || "",
+        state: editData.state || "",
+        postal_code: editData.postal_code || "",
+        country: editData.country || "India",
+        is_default: editData.is_default || false,
       });
+    } else {
+      setFormData(initialForm);
+    }
+  }, [editData, open]);
 
-      const handleChange = (e) => {
-      const { name, value, checked, type } = e.target;
+  const handleChange = (e) => {
+    const { name, value, checked, type } = e.target;
 
-      setFormData((prev) => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : value,
-      }));
-    };
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("access");
 
-    const handleSave = async () => {
-        try {
-          const token = localStorage.getItem("access");
+      if (editData) {
+        await api.put(`api/user/address/update/${editData.id}/`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-          await api.post(
-            "api/user/address/add/",
-            formData,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+        toast.success("Address updated successfully");
+      } else {
+        await api.post("api/user/address/add/", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-          alert("Address added successfully.");
+        toast.success("Address added successfully");
+      }
 
-          onSuccess();
-          onClose();
-
-          setFormData({
-            full_name: "",
-            email: "",
-            phone: "",
-            address_line_1: "",
-            address_line_2: "",
-            city: "",
-            state: "",
-            postal_code: "",
-            country: "India",
-            is_default: false,
-          });
-        } catch (error) {
-          console.log(error);
-          alert("Failed to add address");
-        }
-      };
+      onSuccess();
+      onClose();
+      setFormData(initialForm);
+    } catch (error) {
+      console.log(error);
+      toast.error(editData ? "Failed to update address" : "Failed to add address");
+    }
+  };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      aria-labelledby="add-address-modal"
-    >
+    <Modal open={open} onClose={onClose} aria-labelledby="add-address-modal">
       <Box
         sx={{
           position: "absolute",
@@ -106,7 +117,6 @@ function AddAddressModal({ open, onClose, onSuccess }) {
           overflowY: "auto",
         }}
       >
-        {/* Header */}
         <Box
           sx={{
             p: 3,
@@ -124,7 +134,7 @@ function AddAddressModal({ open, onClose, onSuccess }) {
               letterSpacing: "2px",
             }}
           >
-            Add New Address
+            {editData ? "Edit Address" : "Add New Address"}
           </Typography>
 
           <IconButton onClick={onClose}>
@@ -132,8 +142,7 @@ function AddAddressModal({ open, onClose, onSuccess }) {
           </IconButton>
         </Box>
 
-        {/* Form */}
-        <Box sx={{ p:3  }}>
+        <Box sx={{ p: 3 }}>
           <Box
             sx={{
               display: "grid",
@@ -157,25 +166,26 @@ function AddAddressModal({ open, onClose, onSuccess }) {
           </Box>
 
           <TextField
-              fullWidth
-              label="Email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              size="small"
-              sx={{ mb: 3 }}
-            />
+            fullWidth
+            label="Email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            size="small"
+            sx={{ mb: 3 }}
+          />
 
-            <TextField
-                fullWidth
-                label="Mobile Number"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                size="small"
-                sx={{ mb: 3 }}
-              />
+          <TextField
+            fullWidth
+            label="Mobile Number"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            size="small"
+            sx={{ mb: 3 }}
+          />
+
           <TextField
             fullWidth
             label="Pin Code"
@@ -186,27 +196,26 @@ function AddAddressModal({ open, onClose, onSuccess }) {
             sx={{ mb: 3 }}
           />
 
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            label="Address"
+            name="address_line_1"
+            value={formData.address_line_1}
+            onChange={handleChange}
+            sx={{ mb: 3 }}
+          />
 
           <TextField
-          fullWidth
-          multiline
-          rows={3}
-          label="Address"
-          name="address_line_1"
-          value={formData.address_line_1}
-          onChange={handleChange}
-          sx={{ mb: 3 }}
-        />
-
-        <TextField
-        fullWidth
-        label="Address Line 2"
-        name="address_line_2"
-        value={formData.address_line_2}
-        onChange={handleChange}
-        size="small"
-        sx={{ mb: 3 }}
-      />
+            fullWidth
+            label="Address Line 2"
+            name="address_line_2"
+            value={formData.address_line_2}
+            onChange={handleChange}
+            size="small"
+            sx={{ mb: 3 }}
+          />
 
           <Box
             sx={{
@@ -220,13 +229,13 @@ function AddAddressModal({ open, onClose, onSuccess }) {
             }}
           >
             <TextField
-            fullWidth
-            label="City"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            size="small"
-          />
+              fullWidth
+              label="City"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              size="small"
+            />
 
             <TextField
               select
@@ -256,18 +265,17 @@ function AddAddressModal({ open, onClose, onSuccess }) {
           />
 
           <FormControlLabel
-              control={
-                <Checkbox
-                  name="is_default"
-                  checked={formData.is_default}
-                  onChange={handleChange}
-                />
-              }
-              label="Make this my default shipping address"
-            />
+            control={
+              <Checkbox
+                name="is_default"
+                checked={formData.is_default}
+                onChange={handleChange}
+              />
+            }
+            label="Make this my default shipping address"
+          />
         </Box>
 
-        {/* Footer */}
         <Box
           sx={{
             borderTop: "1px solid #e5e5e5",
@@ -278,10 +286,7 @@ function AddAddressModal({ open, onClose, onSuccess }) {
             gap: 2,
           }}
         >
-          <Button
-            variant="outlined"
-            onClick={onClose}
-          >
+          <Button variant="outlined" onClick={onClose}>
             Cancel
           </Button>
 
@@ -295,7 +300,7 @@ function AddAddressModal({ open, onClose, onSuccess }) {
               },
             }}
           >
-            Save Address
+            {editData ? "Update Address" : "Save Address"}
           </Button>
         </Box>
       </Box>

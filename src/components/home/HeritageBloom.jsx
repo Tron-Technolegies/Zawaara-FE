@@ -2,10 +2,10 @@ import { Link } from "react-router-dom"
 
 function HeritageBloom() {
   return (
-    <section className="bg-[#f7f5f2]">
+    <section className="bg-[#EBE9E4]">
       <div className="max-w-[1600px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[700px]">
-          
+
           {/* Left Content */}
           <div className="flex items-center justify-center px-6 md:px-12 lg:px-20 py-16">
             <div className="max-w-md text-center">
@@ -16,15 +16,15 @@ function HeritageBloom() {
               </h2>
 
               <p className="text-[#7a7a7a] text-base md:text-lg leading-relaxed mb-10">
-                Expressive prints and effortless
+                Expressive prints and effortless <br />
                 silhouettes redefining tradition
               </p>
-            
-            <Link to="/new-arrivals?sections=heritage_blooms">
-              <button className="bg-black text-white uppercase tracking-[3px] text-xs px-10 py-4 hover:bg-[#222] transition duration-300">
-                Discover
-              </button>
-            </Link>
+
+              <Link to="/new-arrivals?sections=heritage_blooms">
+                <button className="bg-black text-white uppercase tracking-[3px] text-xs px-10 py-4 hover:bg-[#222] transition duration-300">
+                  Discover
+                </button>
+              </Link>
             </div>
           </div>
 

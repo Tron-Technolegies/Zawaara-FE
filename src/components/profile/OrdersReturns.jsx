@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "../../api/api";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import OrderInvoice from "./OrderInvoice";
 
 function OrdersReturns() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [currentPage, setCurrentPage] = useState(1);
+
   const ordersPerPage = 1;
+  const invoiceRefs = useRef({});
 
   const lastIndex = currentPage * ordersPerPage;
   const firstIndex = lastIndex - ordersPerPage;
@@ -24,8 +28,6 @@ function OrdersReturns() {
         },
       });
 
-      console.log("Orders API response:", response.data);
-
       setOrders(response.data.orders || []);
     } catch (error) {
       console.log("Orders fetch error:", error);
@@ -40,8 +42,56 @@ function OrdersReturns() {
     fetchOrders();
   }, []);
 
+  const handleDownloadInvoice = async (order) => {
+    try {
+      console.log("Download clicked:", order);
+
+      const invoiceElement = invoiceRefs.current[order.id];
+      console.log("Invoice element:", invoiceElement);
+
+      if (!invoiceElement) {
+        alert("Invoice element not found");
+        return;
+      }
+
+      const canvas = await html2canvas(invoiceElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+
+      console.log("Canvas created");
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      let heightLeft = pdfHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`invoice-${order.orderNumber || order.id}.pdf`);
+      console.log("PDF saved");
+    } catch (err) {
+      console.error("Invoice download failed:", err);
+      alert("Invoice download failed. Check console.");
+    }
+  };
+
   if (loading) {
-    return <div className="text-center py-20">Loading...</div>;
+    return <div className="text-center py-20">Loading orders...</div>;
   }
 
   if (error) {
@@ -63,7 +113,6 @@ function OrdersReturns() {
           key={order.id}
           className="bg-white border border-[#e5e5e5] mb-6"
         >
-          {/* Header */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-b p-4 md:p-6">
             <div>
               <p className="text-[10px] uppercase tracking-[2px] text-gray-400">
@@ -83,17 +132,19 @@ function OrdersReturns() {
               <p className="text-[10px] uppercase tracking-[2px] text-gray-400">
                 Total Amount
               </p>
-              <p className="mt-1 text-sm">{order.totalAmount}</p>
+              <p className="mt-1 text-sm">₹ {order.totalAmount}</p>
             </div>
 
             <div className="text-left md:text-right">
-              <button className="uppercase text-[11px] tracking-[2px]">
-                View Invoice
+              <button
+                onClick={() => handleDownloadInvoice(order)}
+                className="uppercase text-[11px] tracking-[2px]"
+              >
+                Download Invoice
               </button>
             </div>
           </div>
 
-          {/* Products */}
           {(order.products || []).map((product, index) => (
             <div
               key={index}
@@ -107,19 +158,14 @@ function OrdersReturns() {
                 />
 
                 <div>
-                  <h3 className="text-base text-[#222]">
-                    {product.name}
-                  </h3>
+                  <h3 className="text-base text-[#222]">{product.name}</h3>
 
                   <p className="text-sm text-gray-500 mt-1">
                     Size: {product.size || "-"} | Qty: {product.qty}
                   </p>
 
                   <div className="flex items-center gap-2 mt-4">
-                    <span
-                      className={`w-2 h-2 rounded-full ${product.color || "bg-black"}`}
-                    />
-
+                    <span className="w-2 h-2 rounded-full bg-black" />
                     <p className="text-[11px] uppercase tracking-[2px]">
                       {product.status}
                     </p>
@@ -127,13 +173,10 @@ function OrdersReturns() {
                 </div>
               </div>
 
-              <p className="font-medium text-right">
-                {product.price}
-              </p>
+              <p className="font-medium text-right">₹ {product.price}</p>
             </div>
           ))}
 
-          {/* Buttons */}
           <div className="flex flex-col sm:flex-row justify-end gap-3 p-4 md:p-6">
             <button className="border px-6 py-3 text-[11px] uppercase tracking-[2px]">
               Return / Exchange
@@ -146,7 +189,6 @@ function OrdersReturns() {
         </div>
       ))}
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-10">
           <button
@@ -161,9 +203,7 @@ function OrdersReturns() {
             <button
               key={index}
               onClick={() => setCurrentPage(index + 1)}
-              className={`w-8 h-8 text-sm border ${currentPage === index + 1
-                  ? "bg-black text-white"
-                  : "bg-white"
+              className={`w-8 h-8 text-sm border ${currentPage === index + 1 ? "bg-black text-white" : "bg-white"
                 }`}
             >
               {index + 1}
@@ -179,6 +219,19 @@ function OrdersReturns() {
           </button>
         </div>
       )}
+
+      <div className="fixed -left-[9999px] top-0">
+        {orders.map((order) => (
+          <div
+            key={order.id}
+            ref={(el) => {
+              if (el) invoiceRefs.current[order.id] = el;
+            }}
+          >
+            <OrderInvoice order={order} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
