@@ -205,41 +205,73 @@ if (loading) {
 
               {/* Size */}
               <div className="mt-10">
-                <div className="flex gap-6 text-[11px] uppercase tracking-[2px] items-center">
-                  <label htmlFor="size-select">Select Size</label>
-                  <Link to="/sizeguide" className="underline hover:text-[#a77a33] transition">
+                {/* Header row: SELECT SIZE + SIZE CHART */}
+                <div className="flex items-center gap-6">
+                  <span className="text-[11px] uppercase tracking-[2px] text-[#555]">
+                    Select Size
+                  </span>
+                  <Link
+                    to="/sizeguide"
+                    className="flex items-center gap-1 text-[11px] uppercase tracking-[2px] text-[#555] hover:text-[#222] transition"
+                  >
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="1.8"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      />
+                    </svg>
                     Size Chart
                   </Link>
                 </div>
 
-                <select
-                  id="size-select"
-                  value={selectedSize}
-                  onChange={(e) => setSelectedSize(e.target.value)}
-                  className="mt-4 border border-[#ddd] px-3 py-2 bg-white text-sm cursor-pointer outline-none focus:border-[#d8b98a] transition min-w-[80px]"
-                >
-                  <option value="" disabled>-- Select a size --</option>
-                  {["S", "M", "L", "XL"].map((size) => (
-                    <option key={size} value={size}>{size}</option>
+                {/* Size pill buttons */}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {["XS", "S", "M", "L", "XL", "XXL"].map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`min-w-[42px] h-[42px] px-3 text-[12px] font-medium tracking-wide border transition-all duration-200 cursor-pointer ${
+                        selectedSize === size
+                          ? "bg-[#222] text-white border-[#222]"
+                          : "bg-white text-[#222] border-[#ccc] hover:border-[#222]"
+                      }`}
+                    >
+                      {size}
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
 
               {/* Quantity */}
               <div className="mt-8">
-                <label className="block text-[11px] uppercase tracking-[2px] mb-2">
+                <label className="block text-[11px] uppercase tracking-[2px] mb-2 text-[#555]">
                   Quantity
                 </label>
 
-                <select
-                  value={selectedQuantity}
-                  onChange={(e) => setSelectedQuantity(Number(e.target.value))}
-                  className="border border-[#ddd] px-4 py-2 bg-white cursor-pointer"
-                >
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <option key={n} value={n}>{n}</option>
-                  ))}
-                </select>
+                <div className="relative inline-flex items-center border border-[#ccc] bg-white">
+                  <select
+                    value={selectedQuantity}
+                    onChange={(e) => setSelectedQuantity(Number(e.target.value))}
+                    className="appearance-none bg-transparent pl-4 pr-8 py-2 text-sm text-[#222] cursor-pointer outline-none"
+                  >
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                  {/* Chevron */}
+                  <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#555]">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                </div>
               </div>
 
               {/* Add To Bag */}
