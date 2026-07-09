@@ -7,7 +7,7 @@ function SummerChronicles() {
         <div className="grid grid-cols-1 lg:grid-cols-[45%_35%_20%]">
 
           {/* Left Content */}
-          <div className="flex items-center justify-center bg-[#f7f5f2] px-6 py-16 md:px-12 lg:px-20">
+          <div className="flex items-center justify-center bg-[#EBE9E4] px-6 py-16 md:px-12 lg:px-20">
             <div className="text-center max-w-md">
               <h2 className="font-serif text-[#1c1c1c] text-5xl md:text-6xl lg:text-[72px] leading-[0.95]">
                 Summer
@@ -21,11 +21,11 @@ function SummerChronicles() {
                 escapes
               </p>
 
-            <Link to="/new-arrivals?sections=summer_chronicles">
-              <button className="mt-10 bg-black text-white uppercase tracking-[3px] text-[11px] px-10 py-4 hover:bg-[#222] transition duration-300">
-                Discover
-              </button>
-            </Link>
+              <Link to="/new-arrivals?sections=summer_chronicles">
+                <button className="mt-10 bg-black text-white uppercase tracking-[3px] text-[11px] px-10 py-4 hover:bg-[#222] transition duration-300">
+                  Discover
+                </button>
+              </Link>
             </div>
           </div>
 

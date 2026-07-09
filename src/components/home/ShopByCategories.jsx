@@ -5,20 +5,20 @@ import api from "../../api/api";
 const ShopByCategories = () => {
   const [categories, setCategories] = useState([]);
   useEffect(() => {
-  fetchCategories();
-      }, []);
+    fetchCategories();
+  }, []);
 
-      const fetchCategories = async () => {
-        try {
-          const response = await api.get("api/user/view_categories/");
+  const fetchCategories = async () => {
+    try {
+      const response = await api.get("api/user/view_categories/");
 
-          console.log(response.data);
+      console.log(response.data);
 
-          setCategories(response.data.categories);
-        } catch (error) {
-          console.log(error);
-        }
-      };
+      setCategories(response.data.categories);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
   return (
@@ -30,17 +30,18 @@ const ShopByCategories = () => {
 
         {/* Top Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-16">
-  {categories.map((item) => (
-    <div key={item.id} className="h-[500px] md:h-[700px]">
-          <ShopByCategoriesCard
-            id={item.id}
-            image={item.image}
-            title={item.name}
-            buttonText="SHOP NOW"
-          />
+          {categories.map((item) => (
+            <div key={item.id} className="h-[500px] md:h-[700px]">
+              {/* <p className="text-red-500 font-bold">ID: {item.id}</p> */}
+              <ShopByCategoriesCard
+                id={item.id}
+                image={item.image}
+                title={item.name}
+                buttonText="SHOP NOW"
+              />
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
       </div>
     </section>
   );

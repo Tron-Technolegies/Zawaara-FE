@@ -11,7 +11,7 @@ function JustArrived() {
 
   const fetchLatestProducts = async () => {
     try {
-      const response = await api.get("api/user/latest-products/?limit=3");
+      const response = await api.get("api/user/latest-products/?limit=4");
       setProducts(response.data.products);
     } catch (error) {
       console.error("Error fetching latest products:", error);
@@ -20,11 +20,11 @@ function JustArrived() {
 
   return (
     <section className="bg-[#f7f5f2] py-12 md:py-16">
-      <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1500px] m-9 px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8 md:mb-12">
-          <h2 className="font-serif text-[#2b2b2b] text-3xl md:text-5xl tracking-[2px] uppercase">
+          <h2 className="font-serif  py-6 text-3xl md:text-5xl tracking-[2px] uppercase">
             Just Arrived
           </h2>
 
@@ -52,7 +52,7 @@ function JustArrived() {
 
               {/* Content */}
               <div className="text-center mt-4">
-                <h3 className="text-[10px] md:text-xs uppercase tracking-[1px] text-[#3d3d3d]">
+                <h3 className="text-[10px] md:text-xs uppercase tracking-[1px] font-semibold">
                   {product.name}
                 </h3>
 

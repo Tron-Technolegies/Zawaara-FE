@@ -5,30 +5,30 @@ import api from "../../api/api";
 function FeaturedCouture() {
   const [products, setProducts] = useState([]);
 
-useEffect(() => {
-  fetchFeaturedProducts();
-}, []);
+  useEffect(() => {
+    fetchFeaturedProducts();
+  }, []);
 
-const fetchFeaturedProducts = async () => {
-  try {
-    const response = await api.get(
-      "api/user/latest-featured-products/?limit=4"
-    );
+  const fetchFeaturedProducts = async () => {
+    try {
+      const response = await api.get(
+        "api/user/latest-featured-products/?limit=4"
+      );
 
-    setProducts(response.data.products);
-  } catch (error) {
-    console.error("Error fetching featured products:", error);
-  }
-};
-   
+      setProducts(response.data.products);
+    } catch (error) {
+      console.error("Error fetching featured products:", error);
+    }
+  };
+
 
   return (
     <section className="bg-[#f8f7f4] py-16 md:py-24">
       <div className="max-w-[1700px] mx-auto px-4 md:px-8 lg:px-10">
-        
+
         {/* Top Content */}
         <div className="max-w-4xl mx-auto text-center">
-          
+
           {/* Decorative Symbol */}
           <div className="text-[#c78a2d] text-3xl mb-6">
             ✧
@@ -52,14 +52,14 @@ const fetchFeaturedProducts = async () => {
         {/* Section Header */}
         <div className="mt-20 mb-10">
           <div className="flex items-center justify-between border-b border-[#e8e3dc] pb-4">
-            <h3 className="font-serif text-[#1d1d1d] text-3xl md:text-5xl tracking-[3px] uppercase">
+            <h3 className="font-serif pt-9 text-[#1d1d1d] text-3xl md:text-5xl tracking-[3px] uppercase">
               Featured Couture
             </h3>
-          <Link to="/new-arrivals?featured=true">
-            <button className="uppercase text-[11px] tracking-[3px] text-[#555] hover:text-black transition">
-              View All
-            </button>
-          </Link>
+            <Link to="/new-arrivals?featured=true">
+              <button className="uppercase text-[11px] tracking-[3px] text-[#555] hover:text-black transition">
+                View All
+              </button>
+            </Link>
 
           </div>
         </div>
@@ -68,11 +68,11 @@ const fetchFeaturedProducts = async () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => (
             <Link
-                key={product.id}
-                to={`/product/${product.id}`}
-                className="group"
-              >
-              
+              key={product.id}
+              to={`/product/${product.id}`}
+              className="group"
+            >
+
               {/* Product Image */}
               <div className="overflow-hidden bg-white">
                 <img
@@ -105,7 +105,7 @@ const fetchFeaturedProducts = async () => {
 
       </div>
     </section>
-    
+
   )
 }
 

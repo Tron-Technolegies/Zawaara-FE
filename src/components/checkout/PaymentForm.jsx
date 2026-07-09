@@ -17,11 +17,13 @@ export default function PaymentForm({ onBack, order, form }) {
 
     try {
       const fullName = `${form?.first_name || ""} ${form?.last_name || ""}`.trim();
-      const shippingAddress = `${fullName}\n${form?.address_line_1 || ""}${
-        form?.address_line_2 ? ", " + form.address_line_2 : ""
-      }\n${form?.city || ""}, ${form?.state || ""} - ${form?.postal_code || ""}\n${form?.country || ""}`;
 
-      // Pass email, phone, address and couponCode so backend creates order and Razorpay order correctly
+      const shippingAddress = `${fullName}
+${form?.address_line_1 || ""}${form?.address_line_2 ? ", " + form.address_line_2 : ""}
+${form?.city || ""}, ${form?.state || ""} - ${form?.postal_code || ""}
+${form?.country || ""}`;
+
+      // Create Razorpay order
       const { data } = await api.post("api/user/create-order/", {
         email: form?.email || "",
         phone: form?.phone || "",
@@ -58,13 +60,25 @@ export default function PaymentForm({ onBack, order, form }) {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
+              email: form?.email || "",
+              phone: form?.phone || "",
+              shipping_address: shippingAddress,
+              coupon_code: data.coupon_code || "",
+              discount_amount: data.discount_amount || 0,
             });
 
             if (verify.data.success) {
               setLoading(false);
               setStatusMsg("Payment successful! Redirecting...");
               setStatusType("success");
-              setTimeout(() => navigate("/"), 1500);
+
+              setTimeout(() => {
+                navigate("/");
+              }, 1500);
+            } else {
+              setLoading(false);
+              setStatusMsg("Payment verification failed.");
+              setStatusType("error");
             }
           } catch (error) {
             setLoading(false);
@@ -75,9 +89,9 @@ export default function PaymentForm({ onBack, order, form }) {
         },
 
         prefill: {
-          name: "",
-          email: "",
-          contact: "",
+          name: fullName,
+          email: form?.email || "",
+          contact: form?.phone || "",
         },
 
         theme: {
@@ -105,7 +119,6 @@ export default function PaymentForm({ onBack, order, form }) {
 
   return (
     <>
-      {/* Heading */}
       <div className="flex items-center gap-3 mb-4">
         <FiCreditCard className="text-[#d8b98a]" size={18} />
         <h2 className="uppercase tracking-[3px] text-sm font-medium">
@@ -115,27 +128,23 @@ export default function PaymentForm({ onBack, order, form }) {
 
       <hr className="mb-6 border-gray-200" />
 
-      {/* Status Banner */}
       {statusMsg && (
         <div
-          className={`mb-6 px-4 py-3 rounded-sm text-sm ${
-            statusType === "success"
-              ? "bg-green-50 text-green-700 border border-green-200"
-              : "bg-red-50 text-red-600 border border-red-200"
-          }`}
+          className={`mb-6 px-4 py-3 rounded-sm text-sm ${statusType === "success"
+            ? "bg-green-50 text-green-700 border border-green-200"
+            : "bg-red-50 text-red-600 border border-red-200"
+            }`}
         >
           {statusMsg}
         </div>
       )}
 
-      {/* Payment Methods */}
       <div className="space-y-4">
         <label
-          className={`flex items-center gap-3 border rounded-sm p-4 cursor-pointer transition ${
-            paymentMethod === "card"
-              ? "border-[#d8b98a] bg-[#fcfaf7]"
-              : "border-gray-200 hover:border-[#d8b98a]"
-          }`}
+          className={`flex items-center gap-3 border rounded-sm p-4 cursor-pointer transition ${paymentMethod === "card"
+            ? "border-[#d8b98a] bg-[#fcfaf7]"
+            : "border-gray-200 hover:border-[#d8b98a]"
+            }`}
         >
           <input
             type="radio"
@@ -148,11 +157,10 @@ export default function PaymentForm({ onBack, order, form }) {
         </label>
 
         <label
-          className={`flex items-center gap-3 border rounded-sm p-4 cursor-pointer transition ${
-            paymentMethod === "upi"
-              ? "border-[#d8b98a] bg-[#fcfaf7]"
-              : "border-gray-200 hover:border-[#d8b98a]"
-          }`}
+          className={`flex items-center gap-3 border rounded-sm p-4 cursor-pointer transition ${paymentMethod === "upi"
+            ? "border-[#d8b98a] bg-[#fcfaf7]"
+            : "border-gray-200 hover:border-[#d8b98a]"
+            }`}
         >
           <input
             type="radio"
@@ -165,11 +173,10 @@ export default function PaymentForm({ onBack, order, form }) {
         </label>
 
         <label
-          className={`flex items-center gap-3 border rounded-sm p-4 cursor-pointer transition ${
-            paymentMethod === "cod"
-              ? "border-[#d8b98a] bg-[#fcfaf7]"
-              : "border-gray-200 hover:border-[#d8b98a]"
-          }`}
+          className={`flex items-center gap-3 border rounded-sm p-4 cursor-pointer transition ${paymentMethod === "cod"
+            ? "border-[#d8b98a] bg-[#fcfaf7]"
+            : "border-gray-200 hover:border-[#d8b98a]"
+            }`}
         >
           <input
             type="radio"
@@ -182,27 +189,6 @@ export default function PaymentForm({ onBack, order, form }) {
         </label>
       </div>
 
-
-      {/* UPI Form
-      {paymentMethod === "upi" && (
-        <div className="mt-8 border border-gray-200 rounded-sm p-5 bg-white space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="text"
-              placeholder="ENTER UPI ID (E.G. MOBILE@YBL)"
-              className="flex-1 border border-gray-200 rounded-sm px-4 py-3 outline-none focus:border-[#d8b98a] text-xs uppercase tracking-[0.5px]"
-            />
-            <button className="bg-black hover:bg-neutral-800 text-white text-[11px] tracking-[1.5px] uppercase px-6 py-3 transition cursor-pointer">
-              Verify
-            </button>
-          </div>
-          <p className="text-[10px] text-gray-400 uppercase tracking-[1px]">
-            Please enter your registered UPI ID to verify and request payment.
-          </p>
-        </div>
-      )} */}
-
-      {/* Cash on Delivery details */}
       {paymentMethod === "cod" && (
         <div className="mt-8 border border-gray-200 rounded-sm p-5 bg-white space-y-3">
           <p className="text-sm text-[#333]">
@@ -214,12 +200,10 @@ export default function PaymentForm({ onBack, order, form }) {
         </div>
       )}
 
-      {/* Info */}
       <p className="mt-5 text-xs text-gray-500">
         Your payment information will be securely processed during checkout.
       </p>
 
-      {/* Action Buttons Container (Responsive: stack on mobile, row on tablet+) */}
       <div className="flex flex-col-reverse sm:flex-row gap-4 mt-8">
         {onBack && (
           <button
@@ -230,25 +214,24 @@ export default function PaymentForm({ onBack, order, form }) {
             Back
           </button>
         )}
+
         <button
           type="button"
           disabled={loading}
           onClick={() => {
             if (paymentMethod === "cod") {
-              // Call your COD API here
+              // COD logic later
             } else {
               handlePayment();
             }
           }}
           className="flex-1 bg-[#d8b98a] hover:bg-[#a77a33] text-black py-4 uppercase tracking-[3px] text-xs transition cursor-pointer"
         >
-          {
-            loading
-              ? "Processing..."
-              : paymentMethod === "cod"
-                ? "Place Order"
-                : "Pay Now"
-          }
+          {loading
+            ? "Processing..."
+            : paymentMethod === "cod"
+              ? "Place Order"
+              : "Pay Now"}
         </button>
       </div>
     </>
