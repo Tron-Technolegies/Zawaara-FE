@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import api from "../api/api";
 
 function ChangePassword() {
+  useEffect(()=>{
+          window.scrollTo(0, 0)
+        }, [])
   const [formData, setFormData] = useState({
     old_password: "",
     new_password: "",

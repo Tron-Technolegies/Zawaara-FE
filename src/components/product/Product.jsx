@@ -203,6 +203,12 @@ if (loading) {
                 MRP : INR {product?.price}
               </p>
 
+              {Number(product?.stock) <= 0 && (
+                <p className="mt-2 text-red-600 font-bold uppercase tracking-[2px] text-[13px]">
+                  Out of Stock
+                </p>
+              )}
+
               {/* Size */}
               <div className="mt-10">
                 {/* Header row: SELECT SIZE + SIZE CHART */}
@@ -233,19 +239,32 @@ if (loading) {
 
                 {/* Size pill buttons */}
                 <div className="flex flex-wrap gap-2 mt-4">
-                  {["XS", "S", "M", "L", "XL", "XXL"].map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`min-w-[42px] h-[42px] px-3 text-[12px] font-medium tracking-wide border transition-all duration-200 cursor-pointer ${
-                        selectedSize === size
-                          ? "bg-[#222] text-white border-[#222]"
-                          : "bg-white text-[#222] border-[#ccc] hover:border-[#222]"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  {["XS", "S", "M", "L", "XL", "XXL"].map((size) => {
+                    const availableSizes = product?.size ? product.size.split(',').map(s => s.trim()) : [];
+                    const isAvailable = availableSizes.includes(size) && Number(product?.stock) > 0;
+                    return (
+                      <button
+                        key={size}
+                        disabled={!isAvailable}
+                        onClick={() => setSelectedSize(size)}
+                        className={`relative overflow-hidden min-w-[42px] h-[42px] px-3 text-[12px] font-medium tracking-wide border transition-all duration-200 ${
+                          !isAvailable
+                            ? "bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed"
+                            : selectedSize === size
+                            ? "bg-[#222] text-white border-[#222] cursor-pointer"
+                            : "bg-white text-[#222] border-[#ccc] hover:border-[#222] cursor-pointer"
+                        }`}
+                      >
+                        <span className={!isAvailable ? "opacity-50" : ""}>{size}</span>
+                        {!isAvailable && (
+                          <svg className="absolute inset-0 w-full h-full text-gray-300 stroke-[1.5] pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <line x1="0" y1="100" x2="100" y2="0" stroke="currentColor" />
+                            <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -259,11 +278,16 @@ if (loading) {
                   <select
                     value={selectedQuantity}
                     onChange={(e) => setSelectedQuantity(Number(e.target.value))}
-                    className="appearance-none bg-transparent pl-4 pr-8 py-2 text-sm text-[#222] cursor-pointer outline-none"
+                    disabled={Number(product?.stock) <= 0}
+                    className="appearance-none bg-transparent pl-4 pr-8 py-2 text-sm text-[#222] cursor-pointer outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
+                    {Number(product?.stock) > 0 ? (
+                      Array.from({ length: Number(product?.stock) }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={n}>{n}</option>
+                      ))
+                    ) : (
+                      <option value={0}>0</option>
+                    )}
                   </select>
                   {/* Chevron */}
                   <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#555]">
@@ -276,11 +300,19 @@ if (loading) {
 
               {/* Add To Bag */}
               <div className="flex items-center gap-4 mt-8">
-                <button
-                 onClick={handleAddToCart}
-                 className="bg-[#d8b98a] hover:bg-[#a77a33] cursor-pointer transition px-10 py-4 uppercase tracking-[2px] text-[11px]">
-                  Add To Bag
-                </button>
+                {Number(product?.stock) <= 0 ? (
+                  <button
+                    disabled
+                    className="bg-gray-400 text-gray-700 cursor-not-allowed px-10 py-4 uppercase tracking-[2px] text-[11px]">
+                    Out of Stock
+                  </button>
+                ) : (
+                  <button
+                   onClick={handleAddToCart}
+                   className="bg-[#d8b98a] hover:bg-[#a77a33] cursor-pointer transition px-10 py-4 uppercase tracking-[2px] text-[11px]">
+                    Add To Bag
+                  </button>
+                )}
 
                 <button 
                   onClick={handleAddToWishlist}

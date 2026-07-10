@@ -1,9 +1,32 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../../api/api";
+import { toast } from "react-toastify";
 
 function FeaturedCouture() {
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
+
+  const handleBuyNow = (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (Number(product.stock) <= 0) {
+      toast.error("This product is out of stock.");
+      return;
+    }
+
+    const token = localStorage.getItem("access");
+    if (!token) {
+      toast.error("Please login to purchase products.");
+      navigate("/login");
+      return;
+    }
+
+    navigate("/checkout", {
+      state: { buyNowProduct: product },
+    });
+  };
 
   useEffect(() => {
     fetchFeaturedProducts();
@@ -14,13 +37,11 @@ function FeaturedCouture() {
       const response = await api.get(
         "api/user/latest-featured-products/?limit=4"
       );
-
       setProducts(response.data.products);
     } catch (error) {
       console.error("Error fetching featured products:", error);
     }
   };
-
 
   return (
     <section className="bg-[#f8f7f4] py-16 md:py-24">
@@ -28,11 +49,7 @@ function FeaturedCouture() {
 
         {/* Top Content */}
         <div className="max-w-4xl mx-auto text-center">
-
-          {/* Decorative Symbol */}
-          <div className="text-[#c78a2d] text-3xl mb-6">
-            ✧
-          </div>
+          <div className="text-[#c78a2d] text-3xl mb-6">✧</div>
 
           <h2 className="font-serif text-[#1d1d1d] text-4xl md:text-6xl lg:text-[72px] leading-[1.1] tracking-[3px] uppercase">
             A Legacy Woven In
@@ -60,7 +77,6 @@ function FeaturedCouture() {
                 View All
               </button>
             </Link>
-
           </div>
         </div>
 
@@ -72,14 +88,37 @@ function FeaturedCouture() {
               to={`/product/${product.id}`}
               className="group"
             >
-
               {/* Product Image */}
-              <div className="overflow-hidden bg-white">
+              <div className="relative overflow-hidden bg-white">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-[350px] md:h-[450px] lg:h-[520px] object-cover transition duration-500 group-hover:scale-105"
+                  className={`w-full aspect-[3/4] object-cover transition duration-500 group-hover:scale-105 ${Number(product.stock) <= 0 ? "opacity-60" : ""}`}
                 />
+                {Number(product.stock) <= 0 && (
+                  <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1.5 text-[10px] uppercase tracking-[2px] font-semibold z-10">
+                    Out of Stock
+                  </div>
+                )}
+
+                {/* Buy Now Button Overlay */}
+                <div className="absolute inset-x-0 bottom-4 flex justify-center opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-300 z-10">
+                  {Number(product.stock) <= 0 ? (
+                    <button
+                      disabled
+                      className="bg-gray-400/90 text-gray-700 px-6 py-3 text-[11px] uppercase tracking-[2px] font-medium shadow-md w-[80%] cursor-not-allowed"
+                    >
+                      Out of Stock
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => handleBuyNow(e, product)}
+                      className="bg-white/90 backdrop-blur-sm hover:bg-black hover:text-white text-black px-6 py-3 text-[11px] uppercase tracking-[2px] transition duration-300 font-medium shadow-md w-[80%]"
+                    >
+                      Buy Now
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Product Info */}
@@ -98,15 +137,13 @@ function FeaturedCouture() {
                   </span>
                 </div>
               </div>
-
             </Link>
           ))}
         </div>
 
       </div>
     </section>
-
-  )
+  );
 }
 
-export default FeaturedCouture
+export default FeaturedCouture;

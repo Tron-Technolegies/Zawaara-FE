@@ -2,11 +2,36 @@
 import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import api from "../../api/api"; // Adjust the path if needed
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function ProductNewArrival() {
     const sliderRef = useRef(null);
     const [products, setProducts] = useState([]);
+    const navigate = useNavigate();
+
+    const handleBuyNow = (e, product) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (Number(product.stock) <= 0) {
+        toast.error("This product is out of stock.");
+        return;
+      }
+
+      const token = localStorage.getItem("access");
+      if (!token) {
+        toast.error("Please login to purchase products.");
+        navigate("/login");
+        return;
+      }
+
+      navigate("/checkout", {
+        state: {
+          buyNowProduct: product
+        }
+      });
+    };
 
   
     const scrollLeft = () => {
@@ -74,20 +99,38 @@ function ProductNewArrival() {
               <Link
                 to={`/product/${product.id}`}
                 key={product.id}
-                className="flex-shrink-0 w-[180px] sm:w-[220px] md:w-[240px]"
->
-                <div className="overflow-hidden bg-white">
+                className="flex-shrink-0 w-[180px] sm:w-[220px] md:w-[240px] group"
+              >
+                <div className="relative overflow-hidden bg-white">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="
-                      w-full
-                      h-[280px]
-                      sm:h-[340px]
-                      md:h-[420px]
-                      object-cover
-                    "
+                    className={`w-full aspect-[3/4] object-cover transition duration-500 group-hover:scale-105 ${Number(product.stock) <= 0 ? "opacity-60" : ""}`}
                   />
+                  {Number(product.stock) <= 0 && (
+                    <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1.5 text-[10px] uppercase tracking-[2px] font-semibold z-10">
+                      Out of Stock
+                    </div>
+                  )}
+                  
+                  {/* Buy Now Button Overlay */}
+                  <div className="absolute inset-x-0 bottom-4 flex justify-center opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-300 z-10">
+                    {Number(product.stock) <= 0 ? (
+                      <button
+                        disabled
+                        className="bg-gray-400/90 text-gray-700 px-6 py-3 text-[11px] uppercase tracking-[2px] font-medium shadow-md w-[80%] cursor-not-allowed"
+                      >
+                        Out of Stock
+                      </button>
+                    ) : (
+                      <button
+                        onClick={(e) => handleBuyNow(e, product)}
+                        className="bg-white/90 backdrop-blur-sm hover:bg-black hover:text-white text-black px-6 py-3 text-[11px] uppercase tracking-[2px] transition duration-300 font-medium shadow-md w-[80%]"
+                      >
+                        Buy Now
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="text-center mt-3">
@@ -95,7 +138,7 @@ function ProductNewArrival() {
                     {product.name}
                   </h3>
 
-                 <p className="mt-1 text-[12px] text-[#555]">
+                  <p className="mt-1 text-[12px] text-[#555]">
                     ₹ {Number(product.price).toLocaleString("en-IN")}
                   </p>
                 </div>

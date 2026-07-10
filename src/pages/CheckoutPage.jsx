@@ -6,6 +6,9 @@ import PaymentForm from "../components/checkout/PaymentForm";
 import api from "../api/api";
 
 function CheckoutPage() {
+  useEffect(()=>{
+        window.scrollTo(0, 0)
+      }, [])
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -13,8 +16,11 @@ function CheckoutPage() {
   const cartDiscount = location.state?.discount || 0;
   const cartCouponCode = location.state?.couponCode || "";
 
+  // Buy Now product passed via navigate state (null for normal cart checkout)
+  const buyNowProduct = location.state?.buyNowProduct || null;
+
+  // Always start at Step 1 — Shipping form
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState({
     first_name: "",
@@ -30,22 +36,65 @@ function CheckoutPage() {
     is_default: true,
   });
 
-  const [order, setOrder] = useState({
-    subtotal: 0,
-    shipping: 0,
-    discount: 0,
-    couponCode: "",
-    total: 0,
-    items: [],
-    currency: "INR",
+  // ── Order state ─────────────────────────────────────────────────────────────
+  // Buy Now: initialised synchronously from router state on first render
+  //          so the right-side Order Summary is correct immediately, no async gap.
+  // Cart:    initialised empty; populated by fetchCartCheckoutSummary below.
+  const [order, setOrder] = useState(() => {
+    const p = location.state?.buyNowProduct;
+    if (!p) {
+      return {
+        subtotal: 0,
+        shipping: 0,
+        discount: 0,
+        couponCode: "",
+        total: 0,
+        items: [],
+        currency: "INR",
+        buyNowProduct: null,
+      };
+    }
+    const price = Number(p.price) || 0;
+    return {
+      subtotal: price,
+      shipping: 0,
+      discount: 0,
+      couponCode: "",
+      total: price,
+      items: [
+        {
+          id: p.id,
+          name: p.name,
+          image: p.image,
+          quantity: 1,
+          price: p.price,
+          size: p.size || null,
+          total: price,
+        },
+      ],
+      currency: "INR",
+      buyNowProduct: { id: p.id, size: p.size || "", quantity: 1 },
+    };
   });
 
-  // Always fetch checkout summary directly from the backend to ensure freshness
-  useEffect(() => {
-    fetchCheckoutSummary();
-  }, []);
+  // Buy Now: order is ready immediately — no loading spinner needed.
+  // Cart:    start with loading=true; fetchCartCheckoutSummary turns it off.
+  const [loading, setLoading] = useState(!buyNowProduct);
 
-  const fetchCheckoutSummary = async () => {
+  // ── Cart flow only: fetch from backend when there is no Buy Now product ────
+  // Read location.state directly (not the closure variable) and use location.key
+  // as the dependency so this re-evaluates on every fresh navigation.
+  useEffect(() => {
+    const isBuyNow = !!location.state?.buyNowProduct;
+    if (!isBuyNow) {
+      fetchCartCheckoutSummary();
+    }
+  }, [location.key]);
+
+  const fetchCartCheckoutSummary = async () => {
+    // Safety guard: never run the cart API if this is a Buy Now checkout
+    if (location.state?.buyNowProduct) return;
+
     try {
       setLoading(true);
       const response = await api.get("api/user/checkout-summary/");
@@ -56,11 +105,9 @@ function CheckoutPage() {
         return;
       }
 
-      // Apply coupon discount from cart (passed via navigation state)
       const appliedDiscount = cartDiscount || 0;
-      const discountedTotal = appliedDiscount > 0
-        ? (total || 0) - appliedDiscount
-        : (total || 0);
+      const discountedTotal =
+        appliedDiscount > 0 ? (total || 0) - appliedDiscount : total || 0;
 
       setOrder({
         subtotal: subtotal || 0,
@@ -78,6 +125,7 @@ function CheckoutPage() {
           total: Number(item.price) * item.quantity,
         })),
         currency: currency || "INR",
+        buyNowProduct: null,
       });
     } catch (error) {
       console.error("Failed to fetch checkout summary:", error);
@@ -123,65 +171,46 @@ function CheckoutPage() {
 
         {/* Step Indicator */}
         <div className="flex justify-center items-center mb-12">
-
           <div className="flex items-center">
 
-            {/* Shipping */}
+            {/* Step 1 – Shipping */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center
-                ${
-                  step >= 1
-                    ? "bg-[#d8b98a] text-white"
-                    : "bg-gray-200"
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  step >= 1 ? "bg-[#d8b98a] text-white" : "bg-gray-200"
                 }`}
               >
                 1
               </div>
-
-              <p className="mt-2 text-xs uppercase tracking-[2px]">
-                Shipping
-              </p>
+              <p className="mt-2 text-xs uppercase tracking-[2px]">Shipping</p>
             </div>
 
             <div className="w-20 md:w-40 h-[1px] bg-gray-300"></div>
 
-            {/* Review */}
+            {/* Step 2 – Review */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center
-                ${
-                  step >= 2
-                    ? "bg-[#d8b98a] text-white"
-                    : "bg-gray-200"
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  step >= 2 ? "bg-[#d8b98a] text-white" : "bg-gray-200"
                 }`}
               >
                 2
               </div>
-
-              <p className="mt-2 text-xs uppercase tracking-[2px]">
-                Review
-              </p>
+              <p className="mt-2 text-xs uppercase tracking-[2px]">Review</p>
             </div>
 
             <div className="w-20 md:w-40 h-[1px] bg-gray-300"></div>
 
-            {/* Payment */}
+            {/* Step 3 – Payment */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center
-                ${
-                  step >= 3
-                    ? "bg-[#d8b98a] text-white"
-                    : "bg-gray-200"
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  step >= 3 ? "bg-[#d8b98a] text-white" : "bg-gray-200"
                 }`}
               >
                 3
               </div>
-
-              <p className="mt-2 text-xs uppercase tracking-[2px]">
-                Payment
-              </p>
+              <p className="mt-2 text-xs uppercase tracking-[2px]">Payment</p>
             </div>
 
           </div>
@@ -190,7 +219,7 @@ function CheckoutPage() {
         {/* Main Layout */}
         <div className="grid lg:grid-cols-[1fr_380px] gap-10">
 
-          {/* Left Side */}
+          {/* Left Side – Steps */}
           <div className="bg-white p-8 border border-gray-200">
 
             {step === 1 && (
@@ -222,7 +251,6 @@ function CheckoutPage() {
 
           {/* Right Side – Order Summary */}
           <div>
-
             <div className="bg-white border border-gray-200 p-6 sticky top-24">
 
               <h2 className="uppercase tracking-[3px] text-xs mb-6">
@@ -232,12 +260,8 @@ function CheckoutPage() {
 
               {/* Products */}
               <div className="space-y-5">
-
                 {order.items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex gap-4"
-                  >
+                  <div key={item.id} className="flex gap-4">
                     <img
                       src={item.image}
                       alt={item.name}
@@ -245,10 +269,7 @@ function CheckoutPage() {
                     />
 
                     <div className="flex-1">
-
-                      <h3 className="font-serif text-sm">
-                        {item.name}
-                      </h3>
+                      <h3 className="font-serif text-sm">{item.name}</h3>
 
                       {item.size && (
                         <p className="text-xs text-gray-500 mt-1">
@@ -261,23 +282,22 @@ function CheckoutPage() {
                       </p>
 
                       <p className="mt-2 font-medium">
-                        {getCurrencySymbol(order.currency)} {Number(item.price).toLocaleString()}
+                        {getCurrencySymbol(order.currency)}{" "}
+                        {Number(item.price).toLocaleString()}
                       </p>
-
                     </div>
                   </div>
                 ))}
-
               </div>
 
               <hr className="my-6" />
 
               <div className="space-y-3 text-sm">
-
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span>
-                    {getCurrencySymbol(order.currency)} {Number(order.subtotal).toLocaleString()}
+                    {getCurrencySymbol(order.currency)}{" "}
+                    {Number(order.subtotal).toLocaleString()}
                   </span>
                 </div>
 
@@ -286,10 +306,15 @@ function CheckoutPage() {
                     <span>
                       Discount
                       {order.couponCode && (
-                        <span className="ml-1 text-xs text-gray-500">({order.couponCode})</span>
+                        <span className="ml-1 text-xs text-gray-500">
+                          ({order.couponCode})
+                        </span>
                       )}
                     </span>
-                    <span>- {getCurrencySymbol(order.currency)} {Number(order.discount).toLocaleString()}</span>
+                    <span>
+                      - {getCurrencySymbol(order.currency)}{" "}
+                      {Number(order.discount).toLocaleString()}
+                    </span>
                   </div>
                 )}
 
@@ -298,30 +323,27 @@ function CheckoutPage() {
                   <span>
                     {Number(order.shipping) === 0
                       ? "Free"
-                      : `${getCurrencySymbol(order.currency)} ${Number(order.shipping).toLocaleString()}`}
+                      : `${getCurrencySymbol(order.currency)} ${Number(
+                          order.shipping
+                        ).toLocaleString()}`}
                   </span>
                 </div>
-
               </div>
 
               <hr className="my-6" />
 
               <div className="flex justify-between text-xl font-serif">
-
                 <span>Total</span>
-
                 <span>
-                  {getCurrencySymbol(order.currency)} {Number(order.total).toLocaleString()}
+                  {getCurrencySymbol(order.currency)}{" "}
+                  {Number(order.total).toLocaleString()}
                 </span>
-
               </div>
 
             </div>
-
           </div>
 
         </div>
-
       </div>
     </section>
   );

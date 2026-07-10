@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 
 
 function CartPage() {
+  useEffect(()=>{
+        window.scrollTo(0, 0)
+      }, [])
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -78,6 +81,22 @@ const removeItem = async (itemId) => {
 
     fetchCart();
       }catch(error){
+        console.log(error);
+      }
+    };
+
+    const updateSize = async (itemId, size) => {
+      try {
+        await api.patch(`api/user/update_cart_quantity/${itemId}/`, {
+          size
+        });
+        setCartItems((prev) =>
+          prev.map((item) =>
+            item.id === itemId ? { ...item, size } : item
+          )
+        );
+        fetchCart();
+      } catch (error) {
         console.log(error);
       }
     };
@@ -172,6 +191,11 @@ const selectCoupon = (coupon) => {
                           <p className="text-[#777] mt-1 text-sm md:text-base">
                             {item.name}
                           </p>
+                          {Number(item.stock) <= 0 && (
+                            <p className="text-red-500 text-xs font-semibold mt-1 uppercase tracking-[1px]">
+                              Out of Stock
+                            </p>
+                          )}
                         </div>
 
                         <button onClick={() => removeItem(item.id)} className="cursor-pointer shrink-0">
@@ -181,8 +205,14 @@ const selectCoupon = (coupon) => {
 
                       <div className="flex flex-wrap gap-2 sm:gap-4 mt-4 md:mt-6">
 
-                        <select className="border px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm">
-                          <option>Size: {item.size}</option>
+                        <select
+                          className="border px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm cursor-pointer outline-none"
+                          value={item.size}
+                          onChange={(e) => updateSize(item.id, e.target.value)}
+                        >
+                          {(item.product_size ? item.product_size.split(',').map(s => s.trim()) : [item.size]).map(s => (
+                            <option key={s} value={s}>Size: {s}</option>
+                          ))}
                         </select>
 
                         <div className="flex border text-xs sm:text-sm">
@@ -239,7 +269,7 @@ const selectCoupon = (coupon) => {
           {/* RIGHT SIDE */}
           <div className="space-y-5">
 
-            <div className="bg-white border p-5">
+            <div className="bg-white  p-5">
 
             <p className="uppercase text-[11px] tracking-[2px] mb-4">
               Coupons
@@ -340,7 +370,7 @@ const selectCoupon = (coupon) => {
             {/* Sticky Container for Summary & Share Cart */}
             <div className="lg:sticky lg:top-28 space-y-5">
               {/* Summary */}
-              <div className="bg-white border p-5">
+              <div className="bg-white  p-5">
                 <h3 className="uppercase text-[11px] tracking-[2px] mb-6">
                   Price Summary ({cartItems.length} Item)
                 </h3>
@@ -371,6 +401,7 @@ const selectCoupon = (coupon) => {
                     </span>
                 </div>
                 <button
+                  disabled={cartItems.some(item => Number(item.stock) <= 0)}
                   onClick={() =>
                     navigate("/checkout", {
                       state: {
@@ -382,9 +413,9 @@ const selectCoupon = (coupon) => {
                       },
                     })
                   }
-                  className="w-full bg-[#4a4a4a] text-white py-4 mt-6 uppercase tracking-[3px] text-[11px] cursor-pointer"
+                  className="w-full bg-[#4a4a4a] text-white py-4 mt-6 uppercase tracking-[3px] text-[11px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Checkout
+                  {cartItems.some(item => Number(item.stock) <= 0) ? "Remove Out of Stock Items to Checkout" : "Checkout"}
                 </button>
               </div>
 
