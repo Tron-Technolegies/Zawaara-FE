@@ -243,7 +243,7 @@ const Navbar = () => {
       {/* Icons */}
       <div className="flex items-center gap-6">
         <Link
-          to="/login"
+          to={token ? "/myaccount" : "/login"}
           onClick={() => setMenuOpen(false)}
           className="hover:opacity-80 transition"
         >
