@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FiUser, FiHeart, FiMenu, FiX } from "react-icons/fi";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { NavLink, Link, useLocation } from "react-router-dom";
@@ -7,6 +7,7 @@ const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const dropdownRef = useRef(null);
 
     const location = useLocation();
     const token = localStorage.getItem("access");
@@ -18,6 +19,22 @@ const Navbar = () => {
         window.location.href = "/login";
       };
 
+
+    useEffect(()=>{
+      const handleClickOutside = (event)=>{
+        if (
+          dropdownRef.current && !dropdownRef.current.contains(event.target)
+        ){
+          setIsOpen(false);
+        }
+      };
+
+      document.addEventListener("click",handleClickOutside);
+
+      return ()=>{
+        document.removeEventListener("click",handleClickOutside)
+      };
+    },[]);
     
    useEffect(() => {
   const handleScroll = () => {
@@ -122,11 +139,10 @@ const Navbar = () => {
 
           {/* User */}
           <div
-  className="relative"
-  onMouseEnter={() => setIsOpen(true)}
-  onMouseLeave={() => setIsOpen(false)}
->
-  <button className="hover:text-neutral-600 cursor-pointer">
+        className="relative"
+        ref={dropdownRef}
+      >
+  <button className="hover:text-neutral-600 cursor-pointer" onClick={()=>setIsOpen(!isOpen)}>
     <FiUser className={`text-[20px] xl:text-[22px] ${textColor}`} />
   </button>
 
@@ -136,6 +152,9 @@ const Navbar = () => {
         {!token ? (
           <Link
             to="/login"
+            onClick={()=>{
+              setIsOpen(false);
+            }}
             className="block px-4 py-3 text-xs hover:bg-gray-100"
           >
             Login

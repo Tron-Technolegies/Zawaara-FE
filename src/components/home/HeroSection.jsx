@@ -5,7 +5,7 @@ const HeroSection = () => {
     <section className="relative h-screen w-full overflow-hidden">
       {/* Background Image */}
       <img
-        src="home\homecollections\hero_banner.jpg"
+        src="home\homecollections\Zawara_home_hero.jpg"
         alt="Royal Reverie"
         className="absolute inset-0 w-full h-full object-cover"
       />

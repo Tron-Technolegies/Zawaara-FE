@@ -80,6 +80,31 @@ import { useNavigate } from "react-router-dom";
       }
     };
 
+
+    const handleShare = async () => {
+      if (!product) return;
+
+      const shareUrl = window.location.href;
+
+      const shareData = {
+        title: product.name,
+        text: `Check out this product on Zawara`,
+        url: shareUrl,
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+          toast.success("Product shared successfully!");
+        } else {
+          await navigator.clipboard.writeText(shareUrl);
+          toast.success("Product link copied!");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
   useEffect(()=>{
   const fetchProduct = async () => {
     try {
@@ -131,36 +156,39 @@ if (loading) {
       <section className="bg-[#f8f7f4]   min-h-screen">
         <div className="max-w-[1300px] mx-auto px-4 lg:px-6 py-6">
 
-          {/* Back Button Container */}
-          <div className="mb-6">
-            <button
-              onClick={() => navigate("/new-arrivals")}
-              className="flex items-center gap-2 text-[11px] uppercase tracking-[2px] text-[#555] hover:text-black transition cursor-pointer"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              <span>Back</span>
-            </button>
-          </div>
+          
 
           <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-10 lg:gap-20">
 
             {/* LEFT SIDE */}
             <div className="lg:ml-[-99px]">
 
+              
+              {/* Back Button Container */}
+            <div className="mb-6">
+              <button
+                onClick={() => navigate("/new-arrivals")}
+                className="flex items-center gap-2 text-[11px] uppercase tracking-[2px] text-[#555] hover:text-black transition cursor-pointer"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                <span>Back</span>
+              </button>
+            </div>
+
               {/* Main Image */}
-              <div className="bg-white overflow-hidden aspect-[3/4]">
+              <div className="bg-white overflow-hidden aspect-[3/4] w-full">
                 <img
                   src={selectedImage || "/placeholder.png"}
                   // src="/product/product_image1.png"
@@ -170,12 +198,12 @@ if (loading) {
               </div>
 
               {/* Thumbnails */}
-              <div className="flex gap-3 mt-4 overflow-x-auto">
+              <div className="flex gap-3 mt-4 overflow-x-auto pb-2 w-full">
                 {images.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(img)}
-                    className={`border ${
+                    className={`border shrink-0 ${
                       selectedImage === img
                         ? "border-black"
                         : "border-[#ddd]"
@@ -195,7 +223,7 @@ if (loading) {
             <div>
 
               {/* Product Title */}
-              <h1 className="font-serif text-4xl text-[#222]">
+              <h1 className="font-serif text-2xl md:text-4xl text-[#222]">
                 {product?.name}
               </h1>
 
@@ -212,7 +240,7 @@ if (loading) {
               {/* Size */}
               <div className="mt-10">
                 {/* Header row: SELECT SIZE + SIZE CHART */}
-                <div className="flex items-center gap-6">
+                <div className="flex items-center justify-between gap-4">
                   <span className="text-[11px] uppercase tracking-[2px] text-[#555]">
                     Select Size
                   </span>
@@ -299,30 +327,33 @@ if (loading) {
               </div>
 
               {/* Add To Bag */}
-              <div className="flex items-center gap-4 mt-8">
+              <div className="flex items-center gap-3 sm:gap-4 mt-8 w-full">
                 {Number(product?.stock) <= 0 ? (
                   <button
                     disabled
-                    className="bg-gray-400 text-gray-700 cursor-not-allowed px-10 py-4 uppercase tracking-[2px] text-[11px]">
+                    className="flex-1 min-w-0 bg-gray-400 text-gray-700 cursor-not-allowed py-4 px-2 uppercase tracking-[2px] text-[11px] text-center">
                     Out of Stock
                   </button>
                 ) : (
                   <button
                    onClick={handleAddToCart}
-                   className="bg-[#d8b98a] hover:bg-[#a77a33] cursor-pointer transition px-10 py-4 uppercase tracking-[2px] text-[11px]">
+                   className="flex-1 min-w-0 bg-[#d8b98a] hover:bg-[#a77a33] cursor-pointer transition py-4 px-2 uppercase tracking-[2px] text-[11px] text-center text-white">
                     Add To Bag
                   </button>
                 )}
 
                 <button 
                   onClick={handleAddToWishlist}
-                  className="text-xl cursor-pointer">
+                  className="text-xl cursor-pointer shrink-0 ml-1 sm:ml-2">
                   <FiHeart />
                 </button>
 
-                {/* <button className="text-xl">
+                <button
+                  onClick={handleShare}
+                  className="text-xl cursor-pointer hover:text-[#d8b98a] transition shrink-0 ml-1 sm:ml-2"
+                >
                   <FiShare2 />
-                </button> */}
+                </button>
               </div>
 
               <p className="text-xs text-[#777] mt-3">
@@ -330,39 +361,39 @@ if (loading) {
               </p>
 
               {/* Service Icons */}
-              <div className="border border-[#e5e5e5] mt-8">
-                <div className="p-4 flex items-center gap-2 text-sm">
-                  <FiTruck />
-                  Free Shipping
+              <div className="border border-[#e5e5e5] mt-8 w-full">
+                <div className="p-3 sm:p-4 flex items-center gap-2 text-sm">
+                  <FiTruck className="shrink-0 text-lg" />
+                  <span>Free Shipping</span>
                 </div>
 
                 <div className="grid grid-cols-2">
-                  <div className="border-t border-r p-4 flex items-center justify-center gap-2 text-xs uppercase">
-                    <FiRefreshCcw />
-                    Easy Returns
+                  <div className="border-t border-r p-3 sm:p-4 flex flex-col xl:flex-row items-center justify-center gap-1 xl:gap-2 text-[10px] sm:text-xs uppercase text-center">
+                    <FiRefreshCcw className="shrink-0 text-base" />
+                    <span>Easy Returns</span>
                   </div>
 
-                  <div className="border-t p-4 flex items-center justify-center gap-2 text-xs uppercase">
-                    <FiCreditCard />
-                    COD Available
+                  <div className="border-t p-3 sm:p-4 flex flex-col xl:flex-row items-center justify-center gap-1 xl:gap-2 text-[10px] sm:text-xs uppercase text-center">
+                    <FiCreditCard className="shrink-0 text-base" />
+                    <span>COD Available</span>
                   </div>
                 </div>
               </div>
 
               {/* Pincode */}
-              <div className="mt-8">
-                <h3 className="font-medium mb-3">
+              <div className="mt-8 w-full">
+                <h3 className="font-medium mb-3 text-sm sm:text-base">
                   Check Delivery Pincode
                 </h3>
 
-                <div className="flex">
+                <div className="flex w-full">
                   <input
                     type="text"
                     placeholder="110022"
-                    className="flex-1 border border-[#ddd] px-4 py-3"
+                    className="flex-1 min-w-0 border border-[#ddd] px-3 sm:px-4 py-3 text-sm"
                   />
 
-                  <button className="bg-[#d8b98a] px-6">
+                  <button className="bg-[#d8b98a] px-4 sm:px-6 shrink-0 text-sm">
                     Check
                   </button>
                 </div>
