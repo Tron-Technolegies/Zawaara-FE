@@ -130,11 +130,10 @@ function CheckoutPage() {
             <div className="flex flex-col items-center">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center
-                ${
-                  step >= 1
+                ${step >= 1
                     ? "bg-[#d8b98a] text-white"
                     : "bg-gray-200"
-                }`}
+                  }`}
               >
                 1
               </div>
@@ -150,11 +149,10 @@ function CheckoutPage() {
             <div className="flex flex-col items-center">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center
-                ${
-                  step >= 2
+                ${step >= 2
                     ? "bg-[#d8b98a] text-white"
                     : "bg-gray-200"
-                }`}
+                  }`}
               >
                 2
               </div>
@@ -170,11 +168,10 @@ function CheckoutPage() {
             <div className="flex flex-col items-center">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center
-                ${
-                  step >= 3
+                ${step >= 3
                     ? "bg-[#d8b98a] text-white"
                     : "bg-gray-200"
-                }`}
+                  }`}
               >
                 3
               </div>

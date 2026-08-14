@@ -9,34 +9,34 @@ const inputOk =
   "border-gray-200 focus:border-[#d8b98a] focus:ring-1 focus:ring-[#d8b98a]";
 
 function Field({ children }) {
-  
+
   return <div>{children}</div>;
 }
 
-export default function ShippingForm({onContinue,form,
-    setForm,}) {
-    // const [form, setForm] = useState({
-    //   first_name: "",
-    //   last_name: "",
-    //   email: "",
-    //   phone: "",
-    //   address_line_1: "",
-    //   address_line_2: "",
-    //   city: "",
-    //   state: "",
-    //   country: "India",
-    //   postal_code: "",
-    //   is_default: true,
-    // });
+export default function ShippingForm({ onContinue, form,
+  setForm, }) {
+  // const [form, setForm] = useState({
+  //   first_name: "",
+  //   last_name: "",
+  //   email: "",
+  //   phone: "",
+  //   address_line_1: "",
+  //   address_line_2: "",
+  //   city: "",
+  //   state: "",
+  //   country: "India",
+  //   postal_code: "",
+  //   is_default: true,
+  // });
 
   const handleChange = (e) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  setForm((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
