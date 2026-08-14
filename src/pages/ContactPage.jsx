@@ -9,8 +9,12 @@ import {
   FaInstagram,
   FaFacebookF,
 } from "react-icons/fa";
+import { useEffect } from "react";
 
 function ContactPage() {
+  useEffect(()=>{
+          window.scrollTo(0, 0)
+        }, [])
   const whatsappNumber = "9037810000";
 
   return (

@@ -36,36 +36,42 @@ export default function OrderReview({ form, order, onBack, onContinue }) {
 
       {/* Shipping Address */}
       <div className="bg-[#fafafa] border border-gray-200 rounded-sm p-5 space-y-2 text-sm">
-        <h3 className="font-semibold text-[#222]">
-          Shipping Address
-        </h3>
+        <h3 className="font-semibold text-[#222]">Shipping Address</h3>
 
-      {form ? (
+        {address ? (
+          <>
+            <p className="font-medium">{address.full_name}</p>
+            {address.email && <p className="text-gray-500">{address.email}</p>}
+            <p>{address.address_line_1}</p>
+            {address.address_line_2 && <p>{address.address_line_2}</p>}
+            <p>{address.city}, {address.state} - {address.postal_code}</p>
+            <p>{address.country}</p>
+            <p>{address.phone}</p>
+          </>
+        ) : form && form.address_line_1 ? (
           <>
             <p className="font-medium">
               {[form.first_name, form.last_name].filter(Boolean).join(" ")}
             </p>
-
             {form.email && <p className="text-gray-500">{form.email}</p>}
-
             <p>{form.address_line_1}</p>
-
-            {form.address_line_2 && (
-              <p>{form.address_line_2}</p>
-            )}
-
-            <p>
-              {form.city}, {form.state} - {form.postal_code}
-            </p>
-
+            {form.address_line_2 && <p>{form.address_line_2}</p>}
+            <p>{form.city}, {form.state} - {form.postal_code}</p>
             <p>{form.country}</p>
-
             <p>{form.phone}</p>
           </>
         ) : (
-          <p className="text-gray-400 italic">
-            No shipping address provided yet.
-          </p>
+          <div className="flex flex-col gap-2">
+            <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded-sm px-3 py-2 text-xs">
+              No saved address found. Please add a shipping address to continue.
+            </p>
+            <a
+              href="/profile"
+              className="text-[#d8b98a] underline text-xs"
+            >
+              + Add a shipping address in your profile
+            </a>
+          </div>
         )}
       </div>
 

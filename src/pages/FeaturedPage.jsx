@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import MenuSection from "../components/newarrival/MenuSection";
 import FeaturedProductGrid from "../components/featured/FeaturedProductGrid";
 
 function FeaturedPage() {
+  useEffect(()=>{
+          window.scrollTo(0, 0)
+        }, [])
   const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedFilters, setSelectedFilters] = useState({

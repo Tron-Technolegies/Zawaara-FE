@@ -1,9 +1,33 @@
 import { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
 function WishlistPage() {
+  useEffect(()=>{
+        window.scrollTo(0, 0)
+      }, [])
+  const navigate = useNavigate();
+
+  const handleBuyNow = (product) => {
+    if (Number(product.stock) <= 0) {
+      toast.error("This product is out of stock.");
+      return;
+    }
+    navigate("/checkout", {
+      state: {
+        buyNowProduct: {
+          id: product.product_id,
+          name: product.name,
+          image: product.image,
+          price: product.price,
+          size: product.size || "",
+        },
+      },
+    });
+  };
+
   useEffect(()=>{
       window.scrollTo(0, 0)
     }, [])
@@ -126,8 +150,13 @@ function WishlistPage() {
           <img
             src={product.image}
             alt={product.name}
-            className="w-full aspect-[3/4] object-cover"
+            className={`w-full aspect-[3/4] object-cover ${Number(product.stock) <= 0 ? "opacity-60" : ""}`}
           />
+          {Number(product.stock) <= 0 && (
+            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1.5 text-[10px] uppercase tracking-[2px] font-semibold z-10">
+              Out of Stock
+            </div>
+          )}
 
           {/* Remove Button */}
           <button
@@ -137,14 +166,31 @@ function WishlistPage() {
             <FiX className="text-[#555]" />
           </button>
 
-          {/* Move To Bag */}
-          <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition duration-300">
-            <button
-              onClick={() => moveToBag(product)}
-              className="w-full bg-white text-[#222] uppercase tracking-[2px] text-[10px] py-3 border-t"
-            >
-              Move To Bag
-            </button>
+          {/* Hover Actions: Move To Bag + Buy Now */}
+          <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col">
+            {Number(product.stock) <= 0 ? (
+              <button
+                disabled
+                className="w-full bg-gray-400 text-gray-700 uppercase tracking-[2px] text-[10px] py-3 cursor-not-allowed"
+              >
+                Out of Stock
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => handleBuyNow(product)}
+                  className="w-full bg-black text-white uppercase tracking-[2px] text-[10px] py-3"
+                >
+                  Buy Now
+                </button>
+                <button
+                  onClick={() => moveToBag(product)}
+                  className="w-full bg-white text-[#222] uppercase tracking-[2px] text-[10px] py-3 border-t"
+                >
+                  Move To Bag
+                </button>
+              </>
+            )}
           </div>
 
         </div>

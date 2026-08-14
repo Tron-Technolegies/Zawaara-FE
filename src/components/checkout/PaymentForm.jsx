@@ -23,13 +23,21 @@ ${form?.address_line_1 || ""}${form?.address_line_2 ? ", " + form.address_line_2
 ${form?.city || ""}, ${form?.state || ""} - ${form?.postal_code || ""}
 ${form?.country || ""}`;
 
-      // Create Razorpay order
-      const { data } = await api.post("api/user/create-order/", {
+      const postData = {
         email: form?.email || "",
         phone: form?.phone || "",
         shipping_address: shippingAddress,
         coupon_code: order?.couponCode || "",
-      });
+      };
+
+      if (order?.buyNowProduct) {
+        postData.product_id = order.buyNowProduct.id;
+        postData.size = order.buyNowProduct.size;
+        postData.quantity = order.buyNowProduct.quantity;
+      }
+
+      // Create Razorpay order
+      const { data } = await api.post("api/user/create-order/", postData);
 
       if (!window.Razorpay) {
         setLoading(false);
@@ -56,7 +64,7 @@ ${form?.country || ""}`;
 
         handler: async function (response) {
           try {
-            const verify = await api.post("api/user/verify-payment/", {
+            const verifyData = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
@@ -65,7 +73,15 @@ ${form?.country || ""}`;
               shipping_address: shippingAddress,
               coupon_code: data.coupon_code || "",
               discount_amount: data.discount_amount || 0,
-            });
+            };
+
+            if (order?.buyNowProduct) {
+              verifyData.product_id = order.buyNowProduct.id;
+              verifyData.size = order.buyNowProduct.size;
+              verifyData.quantity = order.buyNowProduct.quantity;
+            }
+
+            const verify = await api.post("api/user/verify-payment/", verifyData);
 
             if (verify.data.success) {
               setLoading(false);
