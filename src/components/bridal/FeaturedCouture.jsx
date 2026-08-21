@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import api from "../../api/api";
 import { toast } from "react-toastify";
 
