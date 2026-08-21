@@ -10,13 +10,35 @@ function OrdersReturns() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const ordersPerPage = 1;
+  const ordersPerPage = 4;
   const invoiceRefs = useRef({});
 
   const lastIndex = currentPage * ordersPerPage;
   const firstIndex = lastIndex - ordersPerPage;
   const currentOrders = orders.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(orders.length / ordersPerPage);
+
+  const getStatusStyle = (status) => {
+    switch (status?.toLowerCase()) {
+      case "pending":
+        return "bg-yellow-500";
+
+      case "processing":
+        return "bg-blue-500";
+
+      case "shipped":
+        return "bg-indigo-500";
+
+      case "completed":
+        return "bg-green-500";
+
+      case "cancelled":
+        return "bg-red-500";
+
+      default:
+        return "bg-gray-500";
+    }
+  };
 
   const fetchOrders = async () => {
     try {
@@ -165,9 +187,12 @@ function OrdersReturns() {
                   </p>
 
                   <div className="flex items-center gap-2 mt-4">
-                    <span className="w-2 h-2 rounded-full bg-black" />
-                    <p className="text-[11px] uppercase tracking-[2px]">
-                      {product.status}
+                    <p
+                      className={`text-[11px] uppercase tracking-[2px] p-2 rounded-md text-white ${getStatusStyle(
+                        order.status
+                      )}`}
+                    >
+                      {order.status}
                     </p>
                   </div>
                 </div>
@@ -177,7 +202,7 @@ function OrdersReturns() {
             </div>
           ))}
 
-          <div className="flex flex-col sm:flex-row justify-end gap-3 p-4 md:p-6">
+          {/* <div className="flex flex-col sm:flex-row justify-end gap-3 p-4 md:p-6">
             <button className="border px-6 py-3 text-[11px] uppercase tracking-[2px]">
               Return / Exchange
             </button>
@@ -185,7 +210,7 @@ function OrdersReturns() {
             <button className="bg-[#4a4a4a] text-white px-6 py-3 text-[11px] uppercase tracking-[2px]">
               Track Order
             </button>
-          </div>
+          </div> */}
         </div>
       ))}
 

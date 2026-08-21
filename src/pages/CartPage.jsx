@@ -1,13 +1,13 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FiX, FiShare2 } from "react-icons/fi";
 import api from "../api/api";
 import { useNavigate } from "react-router-dom";
 
 
 function CartPage() {
-  useEffect(()=>{
-        window.scrollTo(0, 0)
-      }, [])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,115 +39,115 @@ function CartPage() {
   };
 
   if (loading) {
-  return (
-    <div className="min-h-screen flex justify-center items-center">
-      Loading...
-    </div>
-  );
-}
-
-const removeItem = async (itemId) => {
-  try {
-    await api.delete(
-      `api/user/remove_cart_item/${itemId}/`
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        Loading...
+      </div>
     );
-
-    fetchCart();
-
-  } catch (error) {
-    console.error(error);
   }
-};
 
-   
- const updateQuantity = async (itemId,quantity)=>{
-  try{
-    await api.patch(`api/user/update_cart_quantity/${itemId}/`,
-      {
-        quantity
-      }
-    );
+  const removeItem = async (itemId) => {
+    try {
+      await api.delete(
+        `api/user/remove_cart_item/${itemId}/`
+      );
 
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === itemId
-          ? {
+      fetchCart();
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  const updateQuantity = async (itemId, quantity) => {
+    try {
+      await api.patch(`api/user/update_cart_quantity/${itemId}/`,
+        {
+          quantity
+        }
+      );
+
+      setCartItems((prev) =>
+        prev.map((item) =>
+          item.id === itemId
+            ? {
               ...item,
               quantity,
             }
-          : item
-      )
-    );
+            : item
+        )
+      );
 
-    fetchCart();
-      }catch(error){
-        console.log(error);
-      }
-    };
+      fetchCart();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    const updateSize = async (itemId, size) => {
-      try {
-        await api.patch(`api/user/update_cart_quantity/${itemId}/`, {
-          size
-        });
-        setCartItems((prev) =>
-          prev.map((item) =>
-            item.id === itemId ? { ...item, size } : item
-          )
-        );
-        fetchCart();
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const updateSize = async (itemId, size) => {
+    try {
+      await api.patch(`api/user/update_cart_quantity/${itemId}/`, {
+        size
+      });
+      setCartItems((prev) =>
+        prev.map((item) =>
+          item.id === itemId ? { ...item, size } : item
+        )
+      );
+      fetchCart();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
   const applyCoupon = async (code = couponCode) => {
-  try {
-    const response = await api.post(
-      "api/user/apply-coupon/",
-      {
-        code,
-        subtotal,
-      }
-    );
+    try {
+      const response = await api.post(
+        "api/user/apply-coupon/",
+        {
+          code,
+          subtotal,
+        }
+      );
 
-    setDiscount(response.data.discount);
-    setTotal(response.data.total);
+      setDiscount(response.data.discount);
+      setTotal(response.data.total);
 
-  } catch (error) {
-    alert(error.response?.data?.error);
+    } catch (error) {
+      alert(error.response?.data?.error);
+    }
+  };
+  const fetchCoupons = async () => {
+
+    try {
+
+      const response = await api.get(
+        "api/user/available-coupons/"
+      );
+
+      setCoupons(response.data);
+
+      setShowCoupons(true);
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+    }
+
   }
-};
-const fetchCoupons = async () => {
 
-    try{
+  const selectCoupon = (coupon) => {
+    setCouponCode(coupon.code);
 
-        const response = await api.get(
-            "api/user/available-coupons/"
-        );
+    setShowCoupons(false);
 
-        setCoupons(response.data);
-
-        setShowCoupons(true);
-
-    }
-
-    catch(error){
-
-        console.log(error);
-
-    }
-
-}
-
-const selectCoupon = (coupon) => {
-  setCouponCode(coupon.code);
-
-  setShowCoupons(false);
-
-  applyCoupon(coupon.code);
-};
+    applyCoupon(coupon.code);
+  };
 
   return (
     <section className="bg-[#f8f7f4] py-8 md:py-12">
@@ -217,31 +217,31 @@ const selectCoupon = (coupon) => {
 
                         <div className="flex border text-xs sm:text-sm">
                           <button
-                                onClick={() =>
-                                  updateQuantity(
-                                    item.id,
-                                    item.quantity - 1
-                                  )
-                                }
-                                className="px-2 sm:px-3 py-1 sm:py-2"
-                                disabled={item.quantity === 1}
-                              >
-                                -
-                              </button>
+                            onClick={() =>
+                              updateQuantity(
+                                item.id,
+                                item.quantity - 1
+                              )
+                            }
+                            className="px-2 sm:px-3 py-1 sm:py-2"
+                            disabled={item.quantity === 1}
+                          >
+                            -
+                          </button>
                           <span className="px-3 sm:px-4 py-1 sm:py-2 border-x">
                             {item.quantity}
                           </span>
                           <button
-                                onClick={() =>
-                                  updateQuantity(
-                                    item.id,
-                                    item.quantity + 1
-                                  )
-                                }
-                                className="px-2 sm:px-3 py-1 sm:py-2"
-                              >
-                                +
-                              </button>
+                            onClick={() =>
+                              updateQuantity(
+                                item.id,
+                                item.quantity + 1
+                              )
+                            }
+                            className="px-2 sm:px-3 py-1 sm:py-2"
+                          >
+                            +
+                          </button>
                         </div>
 
                       </div>
@@ -271,101 +271,101 @@ const selectCoupon = (coupon) => {
 
             <div className="bg-white  p-5">
 
-            <p className="uppercase text-[11px] tracking-[2px] mb-4">
-              Coupons
-            </p>
+              <p className="uppercase text-[11px] tracking-[2px] mb-4">
+                Coupons
+              </p>
 
-            <div className="bg-[#edf7f1] p-4">
+              <div className="bg-[#edf7f1] p-4">
 
-              <input
-                type="text"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                placeholder="Enter Coupon"
-                className="border w-full px-3 py-2 mb-3"
-              />
-              {couponCode && (
-                <p className="text-green-600 text-sm mt-2">
-                  Applied Coupon: {couponCode}
-                </p>
-              )}
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Enter Coupon"
+                  className="border w-full px-3 py-2 mb-3"
+                />
+                {couponCode && (
+                  <p className="text-green-600 text-sm mt-2">
+                    Applied Coupon: {couponCode}
+                  </p>
+                )}
 
-              <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center">
 
-                <button
-                  onClick={applyCoupon}
-                  disabled={!couponCode.trim()}
-                  className="bg-black text-white px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Apply
-                </button>
+                  <button
+                    onClick={applyCoupon}
+                    disabled={!couponCode.trim()}
+                    className="bg-black text-white px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Apply
+                  </button>
 
-                <button
-                  onClick={fetchCoupons}
-                  className="text-green-700 text-sm"
-                >
-                  View all offers
-                </button>
+                  <button
+                    onClick={fetchCoupons}
+                    className="text-green-700 text-sm"
+                  >
+                    View all offers
+                  </button>
+
+                </div>
 
               </div>
 
             </div>
 
-          </div>
-
             {/* Coupon */}
             {
-            showCoupons && (
+              showCoupons && (
 
-                    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
 
-                    <div className="bg-white w-[450px] rounded-lg p-6">
+                  <div className="bg-white w-[450px] rounded-lg p-6">
 
                     <h2 className="text-xl font-bold mb-4">
-                    Available Coupons
+                      Available Coupons
                     </h2>
 
                     {
-                    coupons.map((coupon)=>(
+                      coupons.map((coupon) => (
 
-                    <div
-                    key={coupon.id}
-                    className="border rounded p-4 mb-3"
-                    >
+                        <div
+                          key={coupon.id}
+                          className="border rounded p-4 mb-3"
+                        >
 
-                    <h3 className="font-semibold">
-                    {coupon.code}
-                    </h3>
+                          <h3 className="font-semibold">
+                            {coupon.code}
+                          </h3>
 
-                    <p className="text-sm">
-                    {coupon.description}
-                    </p>
+                          <p className="text-sm">
+                            {coupon.description}
+                          </p>
 
-                    <button
-                    onClick={()=>selectCoupon(coupon)}
-                    className="bg-black text-white px-4 py-2 mt-3"
-                    >
-                    Apply
-                    </button>
+                          <button
+                            onClick={() => selectCoupon(coupon)}
+                            className="bg-black text-white px-4 py-2 mt-3"
+                          >
+                            Apply
+                          </button>
 
-                    </div>
+                        </div>
 
-                    ))
+                      ))
                     }
 
                     <button
-                    onClick={()=>setShowCoupons(false)}
-                    className="mt-3"
+                      onClick={() => setShowCoupons(false)}
+                      className="mt-3"
                     >
-                    Close
+                      Close
                     </button>
 
-                    </div>
+                  </div>
 
-                    </div>
+                </div>
 
-                    )
-                    }
+              )
+            }
 
             {/* Sticky Container for Summary & Share Cart */}
             <div className="lg:sticky lg:top-28 space-y-5">
@@ -376,29 +376,29 @@ const selectCoupon = (coupon) => {
                 </h3>
 
                 <div className="flex justify-between">
-                    <span>Subtotal</span>
+                  <span>Subtotal</span>
 
-                    <span>
-                        ₹{subtotal}
-                    </span>
+                  <span>
+                    ₹{subtotal}
+                  </span>
                 </div>
 
                 <div className="flex justify-between">
-                    <span>Discount</span>
+                  <span>Discount</span>
 
-                    <span className="text-green-600">
-                        -₹{discount}
-                    </span>
+                  <span className="text-green-600">
+                    -₹{discount}
+                  </span>
                 </div>
 
-                <hr/>
+                <hr />
 
                 <div className="flex justify-between text-xl">
-                    <span>Total</span>
+                  <span>Total</span>
 
-                    <span>
-                        ₹{total}
-                    </span>
+                  <span>
+                    ₹{total}
+                  </span>
                 </div>
                 <button
                   disabled={cartItems.some(item => Number(item.stock) <= 0)}

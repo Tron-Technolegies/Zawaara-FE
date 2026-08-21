@@ -19,34 +19,13 @@ const Footer = () => {
 
           {/* Customer Care */}
           <div>
-            <h3 className="text-white text-2xl font-light mb-8">
-              Customer Care
-            </h3>
+            <h3 className="text-white text-2xl font-light mb-8">Customer Care</h3>
 
             <ul className="space-y-5">
-              <li>
-                <a href="/contactus" className="hover:text-white transition">
-                  Contact Us
-                </a>
-              </li>
-
-              <li>
-                <Link to="/shippingandreturns" className="hover:text-white transition">
-                  Shipping & Returns
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/sizeguide" className="hover:text-white transition">
-                  Size Guide
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/faq" className="hover:text-white transition">
-                  FAQ
-                </Link>
-              </li>
+              <li><a href="/contactus" className="hover:text-white transition">Contact Us</a></li>
+              <li><Link to="/shippingandreturns" className="hover:text-white transition">Shipping & Returns</Link></li>
+              <li><Link to="/sizeguide" className="hover:text-white transition">Size Guide</Link></li>
+              <li><Link to="/faq" className="hover:text-white transition">FAQ</Link></li>
             </ul>
           </div>
 
@@ -57,35 +36,13 @@ const Footer = () => {
             </h3>
 
             <ul className="space-y-5">
-              <li>
-                <Link to="/" className="hover:text-white transition">
-                  Home
-                </Link>
-              </li>
 
-              <li>
-                <Link to="/new-arrivals" className="hover:text-white transition">
-                  New In
-                </Link>
-              </li>
+              <li><Link to="/" className="hover:text-white transition">Home</Link></li>
 
-              <li>
-                <Link to="/bridal" className="hover:text-white transition">
-                  Bridal
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/cart" className="hover:text-white transition">
-                  Cart
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/wishlist" className="hover:text-white transition">
-                  Wishlist
-                </Link>
-              </li>
+              <li><Link to="/new-arrivals" className="hover:text-white transition">New In</Link></li>
+              <li><Link to="/bridal" className="hover:text-white transition">Bridal</Link></li>
+              <li><Link to="/cart" className="hover:text-white transition">Cart</Link></li>
+              <li><Link to="/wishlist" className="hover:text-white transition">Wishlist</Link></li>
             </ul>
           </div>
 
@@ -105,13 +62,11 @@ const Footer = () => {
                 <input
                   type="email"
                   placeholder="Enter your email address"
-                  className="w-full bg-transparent border-b border-[#6b625c] pb-3 outline-none text-white placeholder:text-[#9d948e]"
-                />
+                  className="w-full bg-transparent border-b border-[#6b625c] pb-3 outline-none text-white placeholder:text-[#9d948e]" />
 
                 <button
                   type="submit"
-                  className="text-white uppercase tracking-[2px] border-b border-[#6b625c] pb-3 whitespace-nowrap hover:text-gray-300 transition"
-                >
+                  className="text-white uppercase tracking-[2px] border-b border-[#6b625c] pb-3 whitespace-nowrap hover:text-gray-300 transition">
                   Subscribe
                 </button>
               </div>

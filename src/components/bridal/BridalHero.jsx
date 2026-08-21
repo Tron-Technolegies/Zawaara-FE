@@ -2,13 +2,12 @@ import { Link } from "react-router-dom"
 function BridalHero() {
   return (
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
-      
+
       {/* Background Image */}
       <img
         src="/bridal/bridal_hero.jpg"
         alt="Bridal Collection"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+        className="absolute inset-0 w-full h-full object-cover" />
 
       {/* Overlay */}
       <div className="absolute inset-0" />
@@ -16,7 +15,7 @@ function BridalHero() {
       {/* Content */}
       <div className="relative z-10 flex items-center justify-center px-4 py-12 md:py-24">
         <div className="text-center px-4 md:px-6 max-w-5xl">
-          
+
           {/* Collection Label */}
           <p className="text-white uppercase tracking-[4px] md:tracking-[6px] text-[9px] md:text-xs mb-4 md:mb-6">
             The Couture Collection
@@ -35,15 +34,15 @@ function BridalHero() {
 
           {/* Button */}
           <Link to="/new-arrivals">
-          <button className="bg-white text-[#222] uppercase tracking-[2px] md:tracking-[4px] text-[9px] md:text-xs px-6 sm:px-10 md:px-16 py-3 md:py-5 hover:bg-[#f4f4f4] transition duration-300">
-            Explore The Collection
-          </button>
+            <button className="bg-white text-[#222] uppercase tracking-[2px] md:tracking-[4px] text-[9px] md:text-xs px-6 sm:px-10 md:px-16 py-3 md:py-5 hover:bg-[#f4f4f4] transition duration-300">
+              Explore The Collection
+            </button>
           </Link>
 
         </div>
       </div>
     </section>
-    
+
   )
 }
 

@@ -132,8 +132,7 @@ function AddAddressModal({ open, onClose, onSuccess, editData }) {
               fontFamily: "serif",
               textTransform: "uppercase",
               letterSpacing: "2px",
-            }}
-          >
+            }}>
             {editData ? "Edit Address" : "Add New Address"}
           </Typography>
 

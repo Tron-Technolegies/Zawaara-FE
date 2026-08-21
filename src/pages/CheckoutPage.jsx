@@ -6,9 +6,9 @@ import PaymentForm from "../components/checkout/PaymentForm";
 import api from "../api/api";
 
 function CheckoutPage() {
-  useEffect(()=>{
-        window.scrollTo(0, 0)
-      }, [])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -176,9 +176,13 @@ function CheckoutPage() {
             {/* Step 1 – Shipping */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  step >= 1 ? "bg-[#d8b98a] text-white" : "bg-gray-200"
-                }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center
+                ${step >= 1
+                    ? "bg-[#d8b98a] text-white"
+                    : "bg-gray-200"
+                  }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${step >= 1 ? "bg-[#d8b98a] text-white" : "bg-gray-200"
+                  }`}
               >
                 1
               </div>
@@ -190,9 +194,13 @@ function CheckoutPage() {
             {/* Step 2 – Review */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  step >= 2 ? "bg-[#d8b98a] text-white" : "bg-gray-200"
-                }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center
+                ${step >= 2
+                    ? "bg-[#d8b98a] text-white"
+                    : "bg-gray-200"
+                  }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${step >= 2 ? "bg-[#d8b98a] text-white" : "bg-gray-200"
+                  }`}
               >
                 2
               </div>
@@ -204,9 +212,13 @@ function CheckoutPage() {
             {/* Step 3 – Payment */}
             <div className="flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  step >= 3 ? "bg-[#d8b98a] text-white" : "bg-gray-200"
-                }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center
+                ${step >= 3
+                    ? "bg-[#d8b98a] text-white"
+                    : "bg-gray-200"
+                  }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${step >= 3 ? "bg-[#d8b98a] text-white" : "bg-gray-200"
+                  }`}
               >
                 3
               </div>
@@ -324,8 +336,8 @@ function CheckoutPage() {
                     {Number(order.shipping) === 0
                       ? "Free"
                       : `${getCurrencySymbol(order.currency)} ${Number(
-                          order.shipping
-                        ).toLocaleString()}`}
+                        order.shipping
+                      ).toLocaleString()}`}
                   </span>
                 </div>
               </div>
