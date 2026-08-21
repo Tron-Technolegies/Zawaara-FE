@@ -19,7 +19,19 @@ function AddressBook() {
         },
       });
 
-      setAddresses(response.data);
+      const list = Array.isArray(response.data) ? response.data : [];
+      const seen = new Set();
+      const uniqueAddresses = [];
+
+      for (const addr of list) {
+        const key = `${addr.full_name?.trim().toLowerCase()}|${addr.phone?.trim()}|${addr.address_line_1?.trim().toLowerCase()}|${addr.address_line_2?.trim().toLowerCase() || ""}|${addr.city?.trim().toLowerCase()}|${addr.state?.trim().toLowerCase()}|${addr.postal_code?.trim()}|${addr.country?.trim().toLowerCase()}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueAddresses.push(addr);
+        }
+      }
+
+      setAddresses(uniqueAddresses);
     } catch (error) {
       console.log(error);
       toast.error("Failed to load addresses");
