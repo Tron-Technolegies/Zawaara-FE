@@ -19,11 +19,11 @@ import SizeGuide from "./pages/SizeGuide";
 import ResetPassword from "./components/login/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CheckoutPage from "./pages/CheckOutPage";
 import FeaturedPage from "./pages/FeaturedPage";
 import ContactPage from "./pages/ContactPage";
 import OrderReview from "./components/checkout/OrderReview";
 import ChangePassword from "./pages/ChangePassword";
+import CheckoutPage from "./pages/CheckoutPage";
 
 
 const router = createBrowserRouter([
@@ -48,87 +48,87 @@ const router = createBrowserRouter([
         element: <NewArrivalPage />
       },
       {
-        path:"/bridal",
-        element:<BridalPage/>
+        path: "/bridal",
+        element: <BridalPage />
       },
       {
-        path:"/myaccount",
-        element:<MyAccountPage/>
+        path: "/myaccount",
+        element: <MyAccountPage />
       },
       {
-        path:"/cart",
-        element:<CartPage/>
+        path: "/cart",
+        element: <CartPage />
       },
       {
-        path:"/wishlist",
-        element:<WishlistPage/>
+        path: "/wishlist",
+        element: <WishlistPage />
       },
       {
-        path:"/product/:id",
-        element:<ProductPage/>
+        path: "/product/:id",
+        element: <ProductPage />
       },
       {
-        path:"/signup",
-        element:<SignupPage/>
+        path: "/signup",
+        element: <SignupPage />
       },
       {
-        path:"/login",
-        element:<LoginPage/>
-      },
-
-      {
-        path:"/forgot",
-        element:<ForgotPassword/>
+        path: "/login",
+        element: <LoginPage />
       },
 
       {
-        path:"/termsofservice",
-        element:<TermsOfService/>
+        path: "/forgot",
+        element: <ForgotPassword />
       },
 
       {
-        path:"/privacypolicy",
-        element:<PrivacyPolicy/>
+        path: "/termsofservice",
+        element: <TermsOfService />
       },
 
       {
-        path:"/shippingandreturns",
-        element:<ShippingAndReturns/>
+        path: "/privacypolicy",
+        element: <PrivacyPolicy />
       },
 
       {
-        path:"/faq",
-        element:<FAQ/>
+        path: "/shippingandreturns",
+        element: <ShippingAndReturns />
+      },
+
+      {
+        path: "/faq",
+        element: <FAQ />
       },
       {
-        path:"/sizeguide",
-        element:<SizeGuide/>
+        path: "/sizeguide",
+        element: <SizeGuide />
       },
       {
-        path:"/resetpassword/:uid/:token",
-        element:<ResetPassword/>
+        path: "/resetpassword/:uid/:token",
+        element: <ResetPassword />
       },
       {
-        path:"/checkout",
-        element:<CheckoutPage/>
+        path: "/checkout",
+        element: <CheckoutPage />
       },
       {
-        path:"/featured",
-        element:<FeaturedPage/>
+        path: "/featured",
+        element: <FeaturedPage />
       },
       {
-        path:"/contactus",
-        element:<ContactPage/>
+        path: "/contactus",
+        element: <ContactPage />
       },
       {
-        path:"/order-review",
-        element:<OrderReview/>
+        path: "/order-review",
+        element: <OrderReview />
       },
       {
-        path:"/change-password",
-        element:<ChangePassword/>
+        path: "/change-password",
+        element: <ChangePassword />
       }
-  
+
 
     ],
   },
@@ -151,7 +151,7 @@ function App() {
       />
     </>
   );
-  
+
 }
 
 export default App;
