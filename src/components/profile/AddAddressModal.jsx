@@ -13,15 +13,10 @@ import { FiX } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import api from "../../api/api";
+import { INDIAN_STATES } from "../../constants/states";
 
 function AddAddressModal({ open, onClose, onSuccess, editData }) {
-  const states = [
-    "Kerala",
-    "Tamil Nadu",
-    "Karnataka",
-    "Maharashtra",
-    "Delhi",
-  ];
+  const states = INDIAN_STATES;
 
   const initialForm = {
     full_name: "",
